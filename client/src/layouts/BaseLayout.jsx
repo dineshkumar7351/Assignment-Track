@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { GraduationCap, Menu, X, ArrowRight, LogOut, LayoutDashboard } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import ApiHealthBadge from '../components/ApiHealthBadge';
+import PwaInstallBanner from '../components/PwaInstallBanner';
 
 const BaseLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -20,6 +21,9 @@ const BaseLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans">
+      {/* PWA 1-Click Install App Banner */}
+      <PwaInstallBanner />
+
       {/* Top Navigation */}
       <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">

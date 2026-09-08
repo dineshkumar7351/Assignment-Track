@@ -48,13 +48,15 @@ import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminSubjectsPage from './pages/admin/AdminSubjectsPage';
 import AdminAssignmentsPage from './pages/admin/AdminAssignmentsPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
+import ClerkProviderWrapper from './context/ClerkProviderWrapper';
 
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <AuthProvider>
-          <BrowserRouter>
+      <ClerkProviderWrapper>
+        <ThemeProvider>
+          <AuthProvider>
+            <BrowserRouter>
             <Routes>
               {/* Public Website Layout */}
               <Route path="/" element={<BaseLayout />}>
@@ -218,7 +220,8 @@ function App() {
           </BrowserRouter>
         </AuthProvider>
       </ThemeProvider>
-    </ErrorBoundary>
+    </ClerkProviderWrapper>
+  </ErrorBoundary>
   );
 }
 

@@ -5,11 +5,13 @@ import useAuth from '../hooks/useAuth';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
+import { ClerkSignInCard } from '../components/ClerkAuthCard';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, user } = useAuth();
+  const { login, user, isClerkActive } = useAuth();
+  const [showDirectForm, setShowDirectForm] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -114,65 +116,83 @@ const LoginPage = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        <div className="bg-white dark:bg-slate-900 py-8 px-6 shadow-xs rounded-2xl border border-slate-200 dark:border-slate-800 sm:px-10 transition-colors">
-          {/* Server error message */}
-          {serverError && (
-            <Alert
-              type="error"
-              message={serverError}
-              onClose={() => setServerError('')}
-              className="mb-6"
-            />
-          )}
-
-          <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              label="Academic Email"
-              placeholder="e.g. alex@college.edu"
-              icon={Mail}
-              required
-              value={formData.email}
-              onChange={handleChange}
-              error={errors.email}
-            />
-
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              label="Password"
-              placeholder="Enter your password"
-              icon={Lock}
-              required
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-            />
-
-            <div className="pt-2">
-              <Button
-                type="submit"
-                variant="primary"
-                loading={loading}
-                loadingText="Signing In..."
-                icon={LogIn}
-                className="w-full"
-              >
-                Sign In
-              </Button>
-            </div>
-          </form>
-
-          <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-6 text-center text-xs text-slate-600 dark:text-slate-400">
-            Don't have an account?{' '}
-            <Link to="/register" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
-              Create an Account
-            </Link>
+        {isClerkActive && !showDirectForm ? (
+          <div className="bg-white dark:bg-slate-900 py-6 px-4 shadow-sm rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors">
+            <ClerkSignInCard fallbackToggle={() => setShowDirectForm(true)} />
           </div>
-        </div>
+        ) : (
+          <div className="bg-white dark:bg-slate-900 py-8 px-6 shadow-xs rounded-2xl border border-slate-200 dark:border-slate-800 sm:px-10 transition-colors">
+            {/* Server error message */}
+            {serverError && (
+              <Alert
+                type="error"
+                message={serverError}
+                onClose={() => setServerError('')}
+                className="mb-6"
+              />
+            )}
+
+            <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                label="Academic Email"
+                placeholder="e.g. alex@college.edu"
+                icon={Mail}
+                required
+                value={formData.email}
+                onChange={handleChange}
+                error={errors.email}
+              />
+
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                label="Password"
+                placeholder="Enter your password"
+                icon={Lock}
+                required
+                value={formData.password}
+                onChange={handleChange}
+                error={errors.password}
+              />
+
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  loading={loading}
+                  loadingText="Signing In..."
+                  icon={LogIn}
+                  className="w-full"
+                >
+                  Sign In
+                </Button>
+              </div>
+            </form>
+
+            {isClerkActive && (
+              <div className="mt-4 text-center">
+                <button
+                  type="button"
+                  onClick={() => setShowDirectForm(false)}
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                >
+                  ← Back to Clerk Social / Fast Sign In
+                </button>
+              </div>
+            )}
+
+            <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-6 text-center text-xs text-slate-600 dark:text-slate-400">
+              Don't have an account?{' '}
+              <Link to="/register" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
+                Create an Account
+              </Link>
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 text-center">
           <Link

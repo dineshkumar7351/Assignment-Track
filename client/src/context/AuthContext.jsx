@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import { AuthContext } from './authContextInstance';
+import { isClerkConfigured } from './ClerkProviderWrapper';
+import ClerkBridge from './ClerkBridge';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -22,6 +24,19 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
   }, []);
+
+  const handleClerkSyncUser = useCallback((syncedUser, syncedToken) => {
+    setUser(syncedUser);
+    setToken(syncedToken);
+    setLoading(false);
+  }, []);
+
+  const handleClerkSignOut = useCallback(() => {
+    // If Clerk was signed out, clean local session
+    if (isClerkConfigured && user?.clerkId) {
+      logout();
+    }
+  }, [logout, user]);
 
   // Initialize and verify user token on app mount
   useEffect(() => {
@@ -46,8 +61,8 @@ export const AuthProvider = ({ children }) => {
           logout();
         }
       } catch (error) {
-        console.warn('Session expired or invalid:', error.message);
-        if (isMounted) logout();
+        console.warn('Session verification notice:', error.message);
+        if (isMounted && !isClerkConfigured) logout();
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -119,12 +134,21 @@ export const AuthProvider = ({ children }) => {
         token,
         loading,
         isAuthenticated,
+        isClerkActive: isClerkConfigured,
         login,
         register,
         logout,
+        setUser,
       }}
     >
+      {isClerkConfigured && (
+        <ClerkBridge
+          onSyncUser={handleClerkSyncUser}
+          onClerkSignOut={handleClerkSignOut}
+        />
+      )}
       {children}
     </AuthContext.Provider>
   );
 };
+

@@ -334,11 +334,106 @@ const changePassword = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Synchronize authenticated Clerk user with MongoDB User profile
+ * @route   POST /api/auth/clerk-sync
+ * @access  Public / Authenticated
+ */
+const syncClerkUser = async (req, res, next) => {
+  try {
+    const {
+      clerkId,
+      email,
+      fullName,
+      profileImage,
+      role = 'student',
+      department,
+      studentId,
+      employeeId,
+    } = req.body;
+
+    if (!clerkId || !email) {
+      res.status(400);
+      throw new Error('clerkId and email are required for Clerk synchronization');
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Find existing user by clerkId or email
+    let user = await User.findOne({
+      $or: [{ clerkId }, { email: normalizedEmail }],
+    });
+
+    if (user) {
+      let updated = false;
+      if (!user.clerkId || user.clerkId !== clerkId) {
+        user.clerkId = clerkId;
+        updated = true;
+      }
+      if (fullName && fullName.trim() && user.fullName !== fullName.trim()) {
+        user.fullName = fullName.trim();
+        updated = true;
+      }
+      if (profileImage && user.profileImage !== profileImage) {
+        user.profileImage = profileImage;
+        updated = true;
+      }
+      if (department && department.trim() && (!user.department || user.department === '')) {
+        user.department = department.trim();
+        updated = true;
+      }
+      if (updated) {
+        await user.save({ validateBeforeSave: false });
+      }
+    } else {
+      const resolvedRole = ['student', 'teacher', 'admin'].includes(role) ? role : 'student';
+      const autoId = resolvedRole === 'student'
+        ? (studentId || `STU-${Date.now().toString().slice(-6)}`)
+        : (employeeId || `EMP-${Date.now().toString().slice(-6)}`);
+
+      user = await User.create({
+        clerkId,
+        fullName: fullName?.trim() || email.split('@')[0],
+        email: normalizedEmail,
+        role: resolvedRole,
+        department: department?.trim() || 'Computer Science & Engineering',
+        studentId: resolvedRole === 'student' ? autoId : undefined,
+        employeeId: resolvedRole === 'teacher' ? autoId : undefined,
+        profileImage: profileImage || '',
+        isActive: true,
+      });
+    }
+
+    const token = generateToken(user._id);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Clerk user synchronized successfully with academic profile',
+      token,
+      user: {
+        _id: user._id,
+        id: user._id,
+        clerkId: user.clerkId,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        department: user.department,
+        studentId: user.studentId,
+        employeeId: user.employeeId,
+        profileImage: user.profileImage,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
   getMe,
   updateProfile,
   changePassword,
+  syncClerkUser,
 };
 

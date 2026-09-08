@@ -19,9 +19,17 @@ const userSchema = new mongoose.Schema(
         'Please provide a valid email address',
       ],
     },
+    clerkId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+    },
     password: {
       type: String,
-      required: [true, 'Please provide a password'],
+      required: function () {
+        return !this.clerkId;
+      },
       minlength: [6, 'Password must be at least 6 characters long'],
     },
     role: {
@@ -65,7 +73,7 @@ const userSchema = new mongoose.Schema(
 
 // Encrypt password using bcrypt before saving
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+  if (!this.password || !this.isModified('password')) {
     return next();
   }
   const salt = await bcrypt.genSalt(10);
@@ -75,6 +83,7 @@ userSchema.pre('save', async function (next) {
 
 // Compare user-entered password with hashed password in database
 userSchema.methods.matchPassword = async function (enteredPassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

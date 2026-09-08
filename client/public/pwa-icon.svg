@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#3730A3" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#818CF8" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#312E81" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  
+  <!-- Rounded App Icon Background -->
+  <rect width="512" height="512" rx="128" fill="url(#grad1)" />
+  
+  <!-- Subtle Grid Accent -->
+  <circle cx="256" cy="256" r="180" stroke="white" stroke-opacity="0.08" stroke-width="3" fill="none" />
+  <circle cx="256" cy="256" r="220" stroke="white" stroke-opacity="0.04" stroke-width="2" fill="none" />
+  
+  <!-- Main Graduation Cap / Book Symbol -->
+  <g filter="url(#shadow)" transform="translate(48, 64)">
+    <!-- Mortarboard Cap -->
+    <path d="M208 60 L380 140 L208 220 L36 140 Z" fill="#FFFFFF" />
+    <path d="M208 85 L345 140 L208 195 L71 140 Z" fill="url(#accent)" fill-opacity="0.9" />
+    
+    <!-- Cap Under-band -->
+    <path d="M100 170 L100 250 C100 280 316 280 316 250 L316 170 L208 220 Z" fill="#FFFFFF" fill-opacity="0.95" />
+    
+    <!-- Tassel -->
+    <path d="M340 150 L370 210 L362 270" stroke="#FBBF24" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <circle cx="362" cy="285" r="12" fill="#F59E0B" />
+    
+    <!-- Checkmark Badge on Bottom -->
+    <g transform="translate(136, 230)">
+      <circle cx="72" cy="72" r="54" fill="#10B981" stroke="#FFFFFF" stroke-width="10" />
+      <path d="M50 72 L66 88 L98 56" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </g>
+  </g>
+</svg>

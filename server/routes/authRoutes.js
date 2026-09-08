@@ -1,11 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, getMe, updateProfile, changePassword } = require('../controllers/authController');
+const {
+  register,
+  login,
+  getMe,
+  updateProfile,
+  changePassword,
+  syncClerkUser,
+} = require('../controllers/authController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
-// Public authentication routes
+// Public authentication & Clerk synchronization routes
 router.post('/register', register);
 router.post('/login', login);
+router.post('/clerk-sync', syncClerkUser);
 
 // Private authenticated user profile
 router.get('/me', protect, getMe);

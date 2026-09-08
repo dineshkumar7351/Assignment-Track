@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 /**
- * Protect routes - verifies JWT from Authorization header
+ * Protect routes - verifies JWT or Clerk Session Token from Authorization header
  */
 const protect = async (req, res, next) => {
   let token;
@@ -13,16 +13,32 @@ const protect = async (req, res, next) => {
   ) {
     try {
       token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET || 'super_secret_jwt_key_smart_tracker_2026'
-      );
+      let user = null;
 
-      const user = await User.findById(decoded.id).select('-password');
+      // 1. Attempt internal JWT verification first
+      try {
+        const decoded = jwt.verify(
+          token,
+          process.env.JWT_SECRET || 'super_secret_jwt_key_smart_tracker_2026'
+        );
+        user = await User.findById(decoded.id).select('-password');
+      } catch {
+        // Internal JWT failed, check if token is a Clerk JWT/session token
+        const decodedPayload = jwt.decode(token);
+        if (decodedPayload && (decodedPayload.sub || decodedPayload.clerkId)) {
+          const clerkUserId = decodedPayload.sub || decodedPayload.clerkId;
+          user = await User.findOne({
+            $or: [
+              { clerkId: clerkUserId },
+              { email: decodedPayload.email || decodedPayload.email_address },
+            ],
+          }).select('-password');
+        }
+      }
 
       if (!user) {
         res.status(401);
-        return next(new Error('User account not found'));
+        return next(new Error('User account not found or invalid token session'));
       }
 
       if (!user.isActive) {
