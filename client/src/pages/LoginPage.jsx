@@ -96,6 +96,28 @@ const LoginPage = () => {
     }
   };
 
+  const handleQuickDemoLogin = async (demoEmail, demoPassword) => {
+    setFormData({ email: demoEmail, password: demoPassword });
+    setServerError('');
+    setLoading(true);
+
+    const result = await login(demoEmail, demoPassword);
+    setLoading(false);
+
+    if (result.success) {
+      const userRole = result.user?.role;
+      const targetPath =
+        userRole === 'admin'
+          ? '/admin/dashboard'
+          : userRole === 'teacher'
+          ? '/teacher/dashboard'
+          : '/student/dashboard';
+      navigate(targetPath, { replace: true });
+    } else {
+      setServerError(result.message);
+    }
+  };
+
   return (
     <div className="min-h-[80vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
@@ -173,6 +195,44 @@ const LoginPage = () => {
               </div>
             </form>
 
+            {/* Quick 1-Click Demo Login for All Roles */}
+            <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800">
+              <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center mb-2.5">
+                ⚡ 1-Click Instant Demo Login
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemoLogin('john.student@college.edu', 'Password@123')}
+                  className="flex flex-col items-center justify-center p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 transition-all text-indigo-700 dark:text-indigo-300 group cursor-pointer"
+                >
+                  <span className="text-base">🎓</span>
+                  <span className="text-xs font-bold mt-0.5">Student</span>
+                  <span className="text-[9px] text-slate-500 dark:text-slate-400">John</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemoLogin('sarah.teacher@college.edu', 'Password@123')}
+                  className="flex flex-col items-center justify-center p-2 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 transition-all text-purple-700 dark:text-purple-300 group cursor-pointer"
+                >
+                  <span className="text-base">👨‍🏫</span>
+                  <span className="text-xs font-bold mt-0.5">Teacher</span>
+                  <span className="text-[9px] text-slate-500 dark:text-slate-400">Dr. Sarah</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemoLogin('admin@college.edu', 'Admin@123456')}
+                  className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 transition-all text-emerald-700 dark:text-emerald-300 group cursor-pointer"
+                >
+                  <span className="text-base">🛡️</span>
+                  <span className="text-xs font-bold mt-0.5">Admin</span>
+                  <span className="text-[9px] text-slate-500 dark:text-slate-400">Campus</span>
+                </button>
+              </div>
+            </div>
+
             {isClerkActive && (
               <div className="mt-4 text-center">
                 <button
@@ -180,7 +240,7 @@ const LoginPage = () => {
                   onClick={() => setShowDirectForm(false)}
                   className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                 >
-                  ← Back to Clerk Social / Fast Sign In
+                  ← Back to Clerk Social / Google Sign In
                 </button>
               </div>
             )}
