@@ -256,157 +256,259 @@ const TeacherSubmissionsPage = () => {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
-              <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  <th className="py-3.5 px-4">Student</th>
-                  <th className="py-3.5 px-4">Assignment</th>
-                  <th className="py-3.5 px-4">Submission & Status</th>
-                  <th className="py-3.5 px-4">Timeline</th>
-                  <th className="py-3.5 px-4">Marks & Feedback</th>
-                  <th className="py-3.5 px-4 text-right">Evaluation Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {submissions.map((sub) => {
-                  const assignmentMaxMarks = sub.assignment?.maxMarks || sub.assignment?.totalMarks || 100;
-                  const submittedDate = new Date(sub.submittedAt);
-                  const deadlineDate = sub.assignment?.deadline ? new Date(sub.assignment.deadline) : null;
-                  const isLate = deadlineDate ? submittedDate > deadlineDate : false;
-                  const isGraded = sub.status === 'graded' && typeof sub.obtainedMarks === 'number';
+          <div>
+            {/* Mobile Card List View (Visible on Phone Screens < 768px) */}
+            <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+              {submissions.map((sub) => {
+                const assignmentMaxMarks = sub.assignment?.maxMarks || sub.assignment?.totalMarks || 100;
+                const submittedDate = new Date(sub.submittedAt);
+                const deadlineDate = sub.assignment?.deadline ? new Date(sub.assignment.deadline) : null;
+                const isLate = deadlineDate ? submittedDate > deadlineDate : false;
+                const isGraded = sub.status === 'graded' && typeof sub.obtainedMarks === 'number';
 
-                  return (
-                    <tr key={sub._id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors">
-                      {/* Student */}
-                      <td className="py-3.5 px-4">
-                        <div className="font-bold text-slate-900 dark:text-white">
+                return (
+                  <div key={sub._id} className="p-4 space-y-3 bg-white dark:bg-slate-900">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h4 className="font-bold text-sm text-slate-900 dark:text-white">
                           {sub.student?.fullName || 'Student'}
-                        </div>
-                        <div className="text-[11px] text-slate-400">
+                        </h4>
+                        <p className="text-[11px] text-slate-400">
                           {sub.student?.studentId ? `ID: ${sub.student.studentId}` : sub.student?.email}
-                        </div>
-                      </td>
+                        </p>
+                      </div>
 
-                      {/* Assignment */}
-                      <td className="py-3.5 px-4 max-w-xs">
-                        <div className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          onClick={() => openVersionsModal(sub)}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900"
+                        >
+                          <History className="w-3 h-3" />
+                          <span>v{sub.version || 1}</span>
+                        </button>
+
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+                            isGraded
+                              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                              : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                          }`}
+                        >
+                          {isGraded ? 'Graded' : 'Pending'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-slate-800 dark:text-slate-200 truncate max-w-[200px]">
                           {sub.assignment?.title || 'Coursework'}
-                        </div>
-                        <div className="text-[11px] text-slate-400">
-                          {sub.assignment?.subjectId?.name || sub.assignment?.subject || 'Subject'}
-                        </div>
-                      </td>
-
-                      {/* Version & Status */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <button
-                            onClick={() => openVersionsModal(sub)}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900 hover:bg-indigo-100 transition-colors"
-                            title="View all historical versions"
-                          >
-                            <History className="w-3 h-3" />
-                            <span>v{sub.version || 1}</span>
-                          </button>
-
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide ${
-                              isGraded
-                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-                                : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
-                            }`}
-                          >
-                            {isGraded ? 'Graded' : 'Pending'}
+                        </span>
+                        {isLate ? (
+                          <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 flex items-center gap-0.5">
+                            <AlertTriangle className="w-2.5 h-2.5" /> Late
                           </span>
-                        </div>
-                      </td>
-
-                      {/* Timeline: Submitted Date & Late/On-Time */}
-                      <td className="py-3.5 px-4">
-                        <div className="text-slate-700 dark:text-slate-300 font-medium">
-                          {submittedDate.toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </div>
-                        <div className="mt-0.5">
-                          {isLate ? (
-                            <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 flex items-center gap-0.5">
-                              <AlertTriangle className="w-2.5 h-2.5" /> Late
-                            </span>
-                          ) : (
-                            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
-                              <CheckCircle2 className="w-2.5 h-2.5" /> On Time
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Marks & Feedback */}
-                      <td className="py-3.5 px-4 max-w-xs">
-                        {isGraded ? (
-                          <div>
-                            <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                              <Award className="w-3.5 h-3.5 text-emerald-600" />
-                              <span>
-                                {sub.obtainedMarks} / {assignmentMaxMarks}
-                              </span>
-                              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300">
-                                {Math.round((sub.obtainedMarks / assignmentMaxMarks) * 100)}%
-                              </span>
-                            </div>
-                            {sub.feedback && (
-                              <p className="text-[11px] text-slate-500 dark:text-slate-400 italic truncate mt-0.5">
-                                "{sub.feedback}"
-                              </p>
-                            )}
-                          </div>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold text-xs">
-                            <Clock className="w-3 h-3" />
-                            <span>Ungraded</span>
+                          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
+                            <CheckCircle2 className="w-2.5 h-2.5" /> On Time
                           </span>
                         )}
-                      </td>
+                      </div>
 
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {/* Evaluate / Grade Button */}
-                          <button
-                            onClick={() => openEvaluationModal(sub)}
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs shadow-xs transition-all ${
-                              isGraded
-                                ? 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200'
-                                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'
-                            }`}
-                          >
-                            <Award className="w-3.5 h-3.5" />
-                            <span>{isGraded ? 'Update Marks' : 'Evaluate'}</span>
-                          </button>
+                      <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                        <span>Submitted: {submittedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                        {isGraded ? (
+                          <span className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                            <Award className="w-3 h-3" /> {sub.obtainedMarks} / {assignmentMaxMarks} ({Math.round((sub.obtainedMarks / assignmentMaxMarks) * 100)}%)
+                          </span>
+                        ) : (
+                          <span className="text-amber-600 dark:text-amber-400 font-semibold">Ungraded</span>
+                        )}
+                      </div>
+                    </div>
 
-                          {/* Download Button */}
-                          {sub.fileUrl && (
-                            <a
-                              href={getFileDownloadUrl(sub.fileUrl)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-colors"
-                              title="Download Submission File"
+                    {/* Actions */}
+                    <div className="flex items-center justify-end gap-2 pt-1">
+                      {sub.fileUrl && (
+                        <a
+                          href={getFileDownloadUrl(sub.fileUrl)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span>File</span>
+                        </a>
+                      )}
+
+                      <button
+                        onClick={() => openEvaluationModal(sub)}
+                        className={`flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl font-bold text-xs shadow-xs ${
+                          isGraded
+                            ? 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200'
+                            : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                        }`}
+                      >
+                        <Award className="w-3.5 h-3.5" />
+                        <span>{isGraded ? 'Update Marks' : 'Evaluate'}</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View (Visible on Tablet/Desktop >= 768px) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+                <thead>
+                  <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    <th className="py-3.5 px-4">Student</th>
+                    <th className="py-3.5 px-4">Assignment</th>
+                    <th className="py-3.5 px-4">Submission & Status</th>
+                    <th className="py-3.5 px-4">Timeline</th>
+                    <th className="py-3.5 px-4">Marks & Feedback</th>
+                    <th className="py-3.5 px-4 text-right">Evaluation Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {submissions.map((sub) => {
+                    const assignmentMaxMarks = sub.assignment?.maxMarks || sub.assignment?.totalMarks || 100;
+                    const submittedDate = new Date(sub.submittedAt);
+                    const deadlineDate = sub.assignment?.deadline ? new Date(sub.assignment.deadline) : null;
+                    const isLate = deadlineDate ? submittedDate > deadlineDate : false;
+                    const isGraded = sub.status === 'graded' && typeof sub.obtainedMarks === 'number';
+
+                    return (
+                      <tr key={sub._id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors">
+                        {/* Student */}
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-slate-900 dark:text-white">
+                            {sub.student?.fullName || 'Student'}
+                          </div>
+                          <div className="text-[11px] text-slate-400">
+                            {sub.student?.studentId ? `ID: ${sub.student.studentId}` : sub.student?.email}
+                          </div>
+                        </td>
+
+                        {/* Assignment */}
+                        <td className="py-3.5 px-4 max-w-xs">
+                          <div className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                            {sub.assignment?.title || 'Coursework'}
+                          </div>
+                          <div className="text-[11px] text-slate-400">
+                            {sub.assignment?.subjectId?.name || sub.assignment?.subject || 'Subject'}
+                          </div>
+                        </td>
+
+                        {/* Version & Status */}
+                        <td className="py-3.5 px-4">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <button
+                              onClick={() => openVersionsModal(sub)}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900 hover:bg-indigo-100 transition-colors"
+                              title="View all historical versions"
                             >
-                              <Download className="w-3.5 h-3.5" />
-                            </a>
+                              <History className="w-3 h-3" />
+                              <span>v{sub.version || 1}</span>
+                            </button>
+
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide ${
+                                isGraded
+                                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                                  : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                              }`}
+                            >
+                              {isGraded ? 'Graded' : 'Pending'}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Timeline: Submitted Date & Late/On-Time */}
+                        <td className="py-3.5 px-4">
+                          <div className="text-slate-700 dark:text-slate-300 font-medium">
+                            {submittedDate.toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </div>
+                          <div className="mt-0.5">
+                            {isLate ? (
+                              <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 flex items-center gap-0.5">
+                                <AlertTriangle className="w-2.5 h-2.5" /> Late
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
+                                <CheckCircle2 className="w-2.5 h-2.5" /> On Time
+                              </span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Marks & Feedback */}
+                        <td className="py-3.5 px-4 max-w-xs">
+                          {isGraded ? (
+                            <div>
+                              <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <Award className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>
+                                  {sub.obtainedMarks} / {assignmentMaxMarks}
+                                </span>
+                                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300">
+                                  {Math.round((sub.obtainedMarks / assignmentMaxMarks) * 100)}%
+                                </span>
+                              </div>
+                              {sub.feedback && (
+                                <p className="text-[11px] text-slate-500 dark:text-slate-400 italic truncate mt-0.5">
+                                  "{sub.feedback}"
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold text-xs">
+                              <Clock className="w-3 h-3" />
+                              <span>Ungraded</span>
+                            </span>
                           )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => openEvaluationModal(sub)}
+                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs shadow-xs transition-all ${
+                                isGraded
+                                  ? 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200'
+                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'
+                              }`}
+                            >
+                              <Award className="w-3.5 h-3.5" />
+                              <span>{isGraded ? 'Update Marks' : 'Evaluate'}</span>
+                            </button>
+
+                            {sub.fileUrl && (
+                              <a
+                                href={getFileDownloadUrl(sub.fileUrl)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-colors"
+                                title="Download Submission File"
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                              </a>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

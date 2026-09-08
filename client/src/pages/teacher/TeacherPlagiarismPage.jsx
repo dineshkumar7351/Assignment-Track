@@ -323,50 +323,43 @@ const TeacherPlagiarismPage = () => {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
-              <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  <th className="py-3.5 px-4">Student</th>
-                  <th className="py-3.5 px-4">Assignment</th>
-                  <th className="py-3.5 px-4">Similarity Score</th>
-                  <th className="py-3.5 px-4">Risk Classification</th>
-                  <th className="py-3.5 px-4">Highest Matching Peer</th>
-                  <th className="py-3.5 px-4 text-right">Faculty Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {data.submissions.map((sub) => {
-                  const score = typeof sub.similarityScore === 'number' ? sub.similarityScore : 0;
-                  const targetMatchId = sub.highestSimilarSubmission?._id || sub.highestSimilarSubmission;
+          <div>
+            {/* Mobile Card List View (Visible on Phone Screens < 768px) */}
+            <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+              {data.submissions.map((sub) => {
+                const score = typeof sub.similarityScore === 'number' ? sub.similarityScore : 0;
+                const targetMatchId = sub.highestSimilarSubmission?._id || sub.highestSimilarSubmission;
 
-                  return (
-                    <tr key={sub._id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors">
-                      {/* Student */}
-                      <td className="py-3.5 px-4">
-                        <div className="font-bold text-slate-900 dark:text-white">
+                return (
+                  <div key={sub._id} className="p-4 space-y-3 bg-white dark:bg-slate-900">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h4 className="font-bold text-sm text-slate-900 dark:text-white">
                           {sub.student?.fullName || 'Student'}
-                        </div>
-                        <div className="text-[11px] text-slate-400">
+                        </h4>
+                        <p className="text-[11px] text-slate-400">
                           {sub.student?.studentId ? `ID: ${sub.student.studentId}` : sub.student?.email}
-                        </div>
-                      </td>
+                        </p>
+                      </div>
 
-                      {/* Assignment */}
-                      <td className="py-3.5 px-4 max-w-xs">
-                        <div className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                      <div>{getRiskBadge(sub.similarityStatus, score)}</div>
+                    </div>
+
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-xs space-y-2">
+                      <div>
+                        <span className="font-bold text-slate-800 dark:text-slate-200 block truncate">
                           {sub.assignment?.title || 'Coursework Assignment'}
-                        </div>
-                        <div className="text-[11px] text-slate-400">
+                        </span>
+                        <span className="text-[11px] text-slate-400">
                           {sub.assignment?.subjectId?.name || sub.assignment?.subject || 'Subject'}
-                        </div>
-                      </td>
+                        </span>
+                      </div>
 
-                      {/* Similarity Score */}
-                      <td className="py-3.5 px-4">
+                      <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-700/50">
+                        <span className="text-slate-500 font-semibold">Similarity:</span>
                         <div className="flex items-center gap-2">
                           <span
-                            className={`font-black text-sm ${
+                            className={`font-black text-xs ${
                               score > 75
                                 ? 'text-rose-600 dark:text-rose-400'
                                 : score > 50
@@ -378,7 +371,7 @@ const TeacherPlagiarismPage = () => {
                           >
                             {score}%
                           </span>
-                          <div className="w-16 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                          <div className="w-16 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full ${
                                 score > 75
@@ -393,48 +386,153 @@ const TeacherPlagiarismPage = () => {
                             />
                           </div>
                         </div>
-                      </td>
+                      </div>
 
-                      {/* Risk Classification */}
-                      <td className="py-3.5 px-4">
-                        {getRiskBadge(sub.similarityStatus, score)}
-                      </td>
+                      {sub.matchedStudent && (
+                        <div className="flex items-center justify-between text-[11px] pt-1">
+                          <span className="text-slate-500">Matching Peer:</span>
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
+                            {sub.matchedStudent.fullName}
+                          </span>
+                        </div>
+                      )}
+                    </div>
 
-                      {/* Highest Matching Peer */}
-                      <td className="py-3.5 px-4">
-                        {sub.matchedStudent ? (
-                          <div>
-                            <p className="font-semibold text-slate-800 dark:text-slate-200">
-                              {sub.matchedStudent.fullName}
-                            </p>
-                            <p className="text-[10px] text-slate-400">
-                              {sub.matchedStudent.studentId || sub.matchedStudent.email}
-                            </p>
+                    {/* Compare Action Button */}
+                    <div className="pt-1">
+                      {targetMatchId ? (
+                        <Link
+                          to={`/teacher/plagiarism/compare/${sub._id}/${targetMatchId}`}
+                          className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs"
+                        >
+                          <span>Side-by-Side Dual Compare</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      ) : (
+                        <span className="block text-center text-slate-400 text-xs italic py-1">
+                          Single submission in cohort
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View (Visible on Tablet/Desktop >= 768px) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+                <thead>
+                  <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    <th className="py-3.5 px-4">Student</th>
+                    <th className="py-3.5 px-4">Assignment</th>
+                    <th className="py-3.5 px-4">Similarity Score</th>
+                    <th className="py-3.5 px-4">Risk Classification</th>
+                    <th className="py-3.5 px-4">Highest Matching Peer</th>
+                    <th className="py-3.5 px-4 text-right">Faculty Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {data.submissions.map((sub) => {
+                    const score = typeof sub.similarityScore === 'number' ? sub.similarityScore : 0;
+                    const targetMatchId = sub.highestSimilarSubmission?._id || sub.highestSimilarSubmission;
+
+                    return (
+                      <tr key={sub._id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors">
+                        {/* Student */}
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-slate-900 dark:text-white">
+                            {sub.student?.fullName || 'Student'}
                           </div>
-                        ) : (
-                          <span className="text-slate-400 italic">No peer match</span>
-                        )}
-                      </td>
+                          <div className="text-[11px] text-slate-400">
+                            {sub.student?.studentId ? `ID: ${sub.student.studentId}` : sub.student?.email}
+                          </div>
+                        </td>
 
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-right">
-                        {targetMatchId ? (
-                          <Link
-                            to={`/teacher/plagiarism/compare/${sub._id}/${targetMatchId}`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
-                          >
-                            <span>Compare</span>
-                            <ArrowRight className="w-3.5 h-3.5" />
-                          </Link>
-                        ) : (
-                          <span className="text-slate-400 text-xs italic">Single submission</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        {/* Assignment */}
+                        <td className="py-3.5 px-4 max-w-xs">
+                          <div className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                            {sub.assignment?.title || 'Coursework Assignment'}
+                          </div>
+                          <div className="text-[11px] text-slate-400">
+                            {sub.assignment?.subjectId?.name || sub.assignment?.subject || 'Subject'}
+                          </div>
+                        </td>
+
+                        {/* Similarity Score */}
+                        <td className="py-3.5 px-4">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`font-black text-sm ${
+                                score > 75
+                                  ? 'text-rose-600 dark:text-rose-400'
+                                  : score > 50
+                                  ? 'text-orange-600 dark:text-orange-400'
+                                  : score > 20
+                                  ? 'text-amber-600 dark:text-amber-400'
+                                  : 'text-emerald-600 dark:text-emerald-400'
+                              }`}
+                            >
+                              {score}%
+                            </span>
+                            <div className="w-16 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full ${
+                                  score > 75
+                                    ? 'bg-rose-500'
+                                    : score > 50
+                                    ? 'bg-orange-500'
+                                    : score > 20
+                                    ? 'bg-amber-500'
+                                    : 'bg-emerald-500'
+                                }`}
+                                style={{ width: `${Math.min(100, Math.max(5, score))}%` }}
+                              />
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Risk Classification */}
+                        <td className="py-3.5 px-4">
+                          {getRiskBadge(sub.similarityStatus, score)}
+                        </td>
+
+                        {/* Highest Matching Peer */}
+                        <td className="py-3.5 px-4">
+                          {sub.matchedStudent ? (
+                            <div>
+                              <p className="font-semibold text-slate-800 dark:text-slate-200">
+                                {sub.matchedStudent.fullName}
+                              </p>
+                              <p className="text-[10px] text-slate-400">
+                                {sub.matchedStudent.studentId || sub.matchedStudent.email}
+                              </p>
+                            </div>
+                          ) : (
+                            <span className="text-slate-400 italic">No peer match</span>
+                          )}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-3.5 px-4 text-right">
+                          {targetMatchId ? (
+                            <Link
+                              to={`/teacher/plagiarism/compare/${sub._id}/${targetMatchId}`}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                              <span>Compare</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </Link>
+                          ) : (
+                            <span className="text-slate-400 text-xs italic">Single submission</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
