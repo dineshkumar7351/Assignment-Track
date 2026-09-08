@@ -280,70 +280,127 @@ export default function TeacherAnalyticsView({ analyticsData }) {
         </div>
 
         {assignmentPerformance && assignmentPerformance.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                  <th className="pb-3 px-3">Coursework</th>
-                  <th className="pb-3 px-3">Subject</th>
-                  <th className="pb-3 px-3">Submissions</th>
-                  <th className="pb-3 px-3">On-Time %</th>
-                  <th className="pb-3 px-3">Avg Mark</th>
-                  <th className="pb-3 px-3">Range (Low/High)</th>
-                  <th className="pb-3 px-3 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-                {assignmentPerformance.map((item) => (
-                  <tr
-                    key={item._id}
-                    className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
-                  >
-                    <td className="py-3 px-3 font-semibold text-slate-800 dark:text-slate-200">
-                      {item.title}
-                    </td>
-                    <td className="py-3 px-3 text-slate-500 dark:text-slate-400">
-                      {item.subject}
-                    </td>
-                    <td className="py-3 px-3 text-slate-600 dark:text-slate-300">
-                      <span className="font-semibold text-slate-900 dark:text-white">
-                        {item.submissionsCount}
-                      </span>{' '}
-                      ({item.gradedCount} graded)
-                    </td>
-                    <td className="py-3 px-3">
-                      <span
-                        className={`font-semibold ${
-                          item.onTimeRate >= 80
-                            ? 'text-emerald-500'
-                            : item.onTimeRate >= 60
-                            ? 'text-amber-500'
-                            : 'text-rose-500'
-                        }`}
-                      >
-                        {item.onTimeRate}%
+          <div>
+            {/* Mobile Cards View (< 768px) */}
+            <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+              {assignmentPerformance.map((item) => (
+                <div key={item._id} className="py-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                        {item.title}
+                      </h4>
+                      <p className="text-[11px] text-slate-400">{item.subject}</p>
+                    </div>
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+                        item.onTimeRate >= 80
+                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                          : item.onTimeRate >= 60
+                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                          : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+                      }`}
+                    >
+                      {item.onTimeRate}% On-Time
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                    <div>
+                      <span className="text-slate-400 block text-[10px] uppercase">Submissions</span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200">
+                        {item.submissionsCount} ({item.gradedCount} graded)
                       </span>
-                    </td>
-                    <td className="py-3 px-3 font-semibold text-slate-900 dark:text-white">
-                      {item.averageMarks > 0 ? `${item.averageMarks}%` : 'N/A'}
-                    </td>
-                    <td className="py-3 px-3 text-slate-500 dark:text-slate-400">
-                      {item.gradedCount > 0
-                        ? `${item.lowestMark} - ${item.highestMark} pts`
-                        : '—'}
-                    </td>
-                    <td className="py-3 px-3 text-right">
-                      <Link
-                        to="/teacher/submissions"
-                        className="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-600 dark:text-indigo-400 font-semibold text-[11px] rounded-lg transition"
-                      >
-                        Grade
-                      </Link>
-                    </td>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px] uppercase">Avg Mark</span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200">
+                        {item.averageMarks > 0 ? `${item.averageMarks}%` : 'N/A'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-[11px] text-slate-400">
+                      Range: {item.gradedCount > 0 ? `${item.lowestMark} - ${item.highestMark} pts` : '—'}
+                    </span>
+                    <Link
+                      to="/teacher/submissions"
+                      className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+                    >
+                      Grade Submissions
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View (>= 768px) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-100 dark:border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                    <th className="pb-3 px-3">Coursework</th>
+                    <th className="pb-3 px-3">Subject</th>
+                    <th className="pb-3 px-3">Submissions</th>
+                    <th className="pb-3 px-3">On-Time %</th>
+                    <th className="pb-3 px-3">Avg Mark</th>
+                    <th className="pb-3 px-3">Range (Low/High)</th>
+                    <th className="pb-3 px-3 text-right">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+                  {assignmentPerformance.map((item) => (
+                    <tr
+                      key={item._id}
+                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                    >
+                      <td className="py-3 px-3 font-semibold text-slate-800 dark:text-slate-200">
+                        {item.title}
+                      </td>
+                      <td className="py-3 px-3 text-slate-500 dark:text-slate-400">
+                        {item.subject}
+                      </td>
+                      <td className="py-3 px-3 text-slate-600 dark:text-slate-300">
+                        <span className="font-semibold text-slate-900 dark:text-white">
+                          {item.submissionsCount}
+                        </span>{' '}
+                        ({item.gradedCount} graded)
+                      </td>
+                      <td className="py-3 px-3">
+                        <span
+                          className={`font-semibold ${
+                            item.onTimeRate >= 80
+                              ? 'text-emerald-500'
+                              : item.onTimeRate >= 60
+                              ? 'text-amber-500'
+                              : 'text-rose-500'
+                          }`}
+                        >
+                          {item.onTimeRate}%
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-semibold text-slate-900 dark:text-white">
+                        {item.averageMarks > 0 ? `${item.averageMarks}%` : 'N/A'}
+                      </td>
+                      <td className="py-3 px-3 text-slate-500 dark:text-slate-400">
+                        {item.gradedCount > 0
+                          ? `${item.lowestMark} - ${item.highestMark} pts`
+                          : '—'}
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <Link
+                          to="/teacher/submissions"
+                          className="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-600 dark:text-indigo-400 font-semibold text-[11px] rounded-lg transition"
+                        >
+                          Grade
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
           <div className="py-10 text-center text-slate-400 text-xs">
