@@ -1,5 +1,6 @@
 const { execSync } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
 try {
   console.log('📦 [1/3] Installing Server Dependencies...');
@@ -20,8 +21,17 @@ try {
     stdio: 'inherit',
   });
 
+  // Mirror client/dist to root ./dist for Vercel/Render output directory compatibility
+  const clientDist = path.join(__dirname, 'client', 'dist');
+  const rootDist = path.join(__dirname, 'dist');
+  if (fs.existsSync(clientDist)) {
+    fs.cpSync(clientDist, rootDist, { recursive: true, force: true });
+    console.log('📋 Output synced to root ./dist directory.');
+  }
+
   console.log('🎉 Fullstack Build Completed Successfully!');
 } catch (error) {
   console.error('❌ Build failed:', error.message);
   process.exit(1);
 }
+
