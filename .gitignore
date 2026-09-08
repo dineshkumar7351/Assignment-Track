@@ -13,14 +13,14 @@ build/
 # Environment Variables
 .env
 .env.*
+!.env.example
 server/.env
-server/.env.*
 
-# Uploads and temporary assets
+# Uploads and temporary storage
 uploads/
 server/uploads/
-*.pdf
-*.docx
+*.log
+rsa_lab_report_*
 
 # Logs
 npm-debug.log*
