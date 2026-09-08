@@ -1,0 +1,21 @@
+{
+  "name": "smart-assignment-tracker",
+  "version": "1.0.0",
+  "description": "Smart Assignment Tracker - Fullstack Academic Management Platform",
+  "main": "server/server.js",
+  "scripts": {
+    "build": "node build.js",
+    "start": "node server/server.js",
+    "seed:admin": "node server/scripts/seedAdmin.js",
+    "seed:academic": "node server/scripts/seedAcademicData.js"
+  },
+  "keywords": [
+    "academic",
+    "assignment-tracker",
+    "react",
+    "express",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC"
+}

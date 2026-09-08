@@ -53,24 +53,44 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Root route
-app.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Smart Assignment Tracker API is operational',
-    endpoints: {
-      health: '/api/health',
-      auth: '/api/auth',
-      dashboard: '/api/dashboard',
-      assignments: '/api/assignments',
-      subjects: '/api/subjects',
-      submissions: '/api/submissions',
-      evaluations: '/api/evaluations',
-      similarity: '/api/similarity',
-      notifications: '/api/notifications',
-      calendar: '/api/calendar',
-    },
+const fs = require('fs');
+
+// Serve static client build if present (production / deployment)
+const clientDistPath = path.join(__dirname, '../client/dist');
+
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    const indexPath = path.join(clientDistPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      return res.sendFile(indexPath);
+    }
+    next();
   });
-});
+} else {
+  // Root route API description
+  app.get('/', (req, res) => {
+    res.status(200).json({
+      message: 'Smart Assignment Tracker API is operational',
+      endpoints: {
+        health: '/api/health',
+        auth: '/api/auth',
+        dashboard: '/api/dashboard',
+        assignments: '/api/assignments',
+        subjects: '/api/subjects',
+        submissions: '/api/submissions',
+        evaluations: '/api/evaluations',
+        similarity: '/api/similarity',
+        notifications: '/api/notifications',
+        calendar: '/api/calendar',
+      },
+    });
+  });
+}
 
 // Error handling middleware
 app.use(notFound);
