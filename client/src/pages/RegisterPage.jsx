@@ -15,6 +15,7 @@ import Input from '../components/common/Input';
 import Select from '../components/common/Select';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
+import { ClerkSignUpCard } from '../components/ClerkAuthCard';
 
 const DEPARTMENTS = [
   'Computer Science & Engineering',
@@ -29,7 +30,8 @@ const DEPARTMENTS = [
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, isClerkActive } = useAuth();
+  const [showDirectForm, setShowDirectForm] = useState(false);
 
   const [role, setRole] = useState('student');
   const [formData, setFormData] = useState({
@@ -152,166 +154,184 @@ const RegisterPage = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        <div className="bg-white py-8 px-6 shadow-xs rounded-2xl border border-slate-200 sm:px-10">
-          {/* Server error alert */}
-          {serverError && (
-            <Alert
-              type="error"
-              message={serverError}
-              onClose={() => setServerError('')}
-              className="mb-6"
-            />
-          )}
-
-          {/* Role selector buttons: Student vs Teacher */}
-          <div className="mb-6">
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
-              Registration Role
-            </label>
-            <div className="grid grid-cols-2 gap-3 p-1 bg-slate-100 rounded-xl">
-              <button
-                type="button"
-                onClick={() => {
-                  setRole('student');
-                  setErrors({});
-                }}
-                className={`py-2 px-4 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  role === 'student'
-                    ? 'bg-white text-indigo-700 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Student
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setRole('teacher');
-                  setErrors({});
-                }}
-                className={`py-2 px-4 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  role === 'teacher'
-                    ? 'bg-white text-indigo-700 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Teacher / Faculty
-              </button>
-            </div>
+        {isClerkActive && !showDirectForm ? (
+          <div className="bg-white dark:bg-slate-900 py-6 px-4 shadow-sm rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors">
+            <ClerkSignUpCard fallbackToggle={() => setShowDirectForm(true)} />
           </div>
-
-          <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-            <Input
-              id="fullName"
-              name="fullName"
-              label="Full Name"
-              placeholder={role === 'student' ? 'e.g. Alex Johnson' : 'e.g. Dr. Robert Miller'}
-              icon={User}
-              required
-              value={formData.fullName}
-              onChange={handleChange}
-              error={errors.fullName}
-            />
-
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              label="Academic Email"
-              placeholder={role === 'student' ? 'student@college.edu' : 'faculty@college.edu'}
-              icon={Mail}
-              required
-              value={formData.email}
-              onChange={handleChange}
-              error={errors.email}
-            />
-
-            <Select
-              id="department"
-              name="department"
-              label="Department"
-              placeholder="Select your academic department"
-              icon={Building2}
-              required
-              options={DEPARTMENTS}
-              value={formData.department}
-              onChange={handleChange}
-              error={errors.department}
-            />
-
-            {role === 'student' ? (
-              <Input
-                id="studentId"
-                name="studentId"
-                label="Student ID"
-                placeholder="e.g. STU-2026-042"
-                icon={BadgeCheck}
-                required
-                value={formData.studentId}
-                onChange={handleChange}
-                error={errors.studentId}
-              />
-            ) : (
-              <Input
-                id="employeeId"
-                name="employeeId"
-                label="Employee ID"
-                placeholder="e.g. FAC-2026-101"
-                icon={BadgeCheck}
-                required
-                value={formData.employeeId}
-                onChange={handleChange}
-                error={errors.employeeId}
+        ) : (
+          <div className="bg-white dark:bg-slate-900 py-8 px-6 shadow-xs rounded-2xl border border-slate-200 dark:border-slate-800 sm:px-10 transition-colors">
+            {/* Server error alert */}
+            {serverError && (
+              <Alert
+                type="error"
+                message={serverError}
+                onClose={() => setServerError('')}
+                className="mb-6"
               />
             )}
 
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              label="Password"
-              placeholder="Minimum 6 characters"
-              icon={Lock}
-              required
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-            />
-
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              label="Confirm Password"
-              placeholder="Re-enter password"
-              icon={Lock}
-              required
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              error={errors.confirmPassword}
-            />
-
-            <div className="pt-2">
-              <Button
-                type="submit"
-                variant="primary"
-                loading={loading}
-                loadingText="Creating Account..."
-                icon={UserPlus}
-                className="w-full"
-              >
-                Create {role === 'student' ? 'Student' : 'Teacher'} Account
-              </Button>
+            {/* Role selector buttons: Student vs Teacher */}
+            <div className="mb-6">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                Registration Role
+              </label>
+              <div className="grid grid-cols-2 gap-3 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRole('student');
+                    setErrors({});
+                  }}
+                  className={`py-2 px-4 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    role === 'student'
+                      ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Student
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRole('teacher');
+                    setErrors({});
+                  }}
+                  className={`py-2 px-4 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    role === 'teacher'
+                      ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  Teacher / Faculty
+                </button>
+              </div>
             </div>
-          </form>
 
-          <div className="mt-6 border-t border-slate-100 pt-6 text-center text-xs text-slate-600">
-            Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
-              Sign In
-            </Link>
+            <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+              <Input
+                id="fullName"
+                name="fullName"
+                label="Full Name"
+                placeholder={role === 'student' ? 'e.g. Alex Johnson' : 'e.g. Dr. Robert Miller'}
+                icon={User}
+                required
+                value={formData.fullName}
+                onChange={handleChange}
+                error={errors.fullName}
+              />
+
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                label="Academic Email"
+                placeholder={role === 'student' ? 'student@college.edu' : 'faculty@college.edu'}
+                icon={Mail}
+                required
+                value={formData.email}
+                onChange={handleChange}
+                error={errors.email}
+              />
+
+              <Select
+                id="department"
+                name="department"
+                label="Department"
+                placeholder="Select your academic department"
+                icon={Building2}
+                required
+                options={DEPARTMENTS}
+                value={formData.department}
+                onChange={handleChange}
+                error={errors.department}
+              />
+
+              {role === 'student' ? (
+                <Input
+                  id="studentId"
+                  name="studentId"
+                  label="Student ID"
+                  placeholder="e.g. STU-2026-042"
+                  icon={BadgeCheck}
+                  required
+                  value={formData.studentId}
+                  onChange={handleChange}
+                  error={errors.studentId}
+                />
+              ) : (
+                <Input
+                  id="employeeId"
+                  name="employeeId"
+                  label="Employee ID"
+                  placeholder="e.g. FAC-2026-101"
+                  icon={BadgeCheck}
+                  required
+                  value={formData.employeeId}
+                  onChange={handleChange}
+                  error={errors.employeeId}
+                />
+              )}
+
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                label="Password"
+                placeholder="Minimum 6 characters"
+                icon={Lock}
+                required
+                value={formData.password}
+                onChange={handleChange}
+                error={errors.password}
+              />
+
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                label="Confirm Password"
+                placeholder="Re-enter password"
+                icon={Lock}
+                required
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                error={errors.confirmPassword}
+              />
+
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  loading={loading}
+                  loadingText="Creating Account..."
+                  icon={UserPlus}
+                  className="w-full"
+                >
+                  Create {role === 'student' ? 'Student' : 'Teacher'} Account
+                </Button>
+              </div>
+            </form>
+
+            {isClerkActive && (
+              <div className="mt-4 text-center">
+                <button
+                  type="button"
+                  onClick={() => setShowDirectForm(false)}
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                >
+                  ← Back to Clerk Quick Sign Up
+                </button>
+              </div>
+            )}
+
+            <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-6 text-center text-xs text-slate-600 dark:text-slate-400">
+              Already have an account?{' '}
+              <Link to="/login" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
+                Sign In
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mt-6 text-center">
           <Link
