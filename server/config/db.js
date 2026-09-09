@@ -6,6 +6,10 @@ const mongoose = require('mongoose');
  * Displays clear, descriptive server-side messages if unavailable or on error.
  */
 const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) {
+    return true;
+  }
+
   const mongoURI = process.env.MONGO_URI;
 
   if (!mongoURI || mongoURI.trim() === '') {

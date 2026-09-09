@@ -27,7 +27,14 @@ connectDB();
 const app = express();
 
 // Middleware: Enable Cross-Origin Resource Sharing (CORS)
-app.use(cors());
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+app.options('*', cors());
 
 // Middleware: Body parser for incoming JSON payloads
 app.use(express.json());
@@ -98,7 +105,12 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-  console.log(`🔗 Health Check: http://localhost:${PORT}/api/health`);
-});
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    console.log(`🔗 Health Check: http://localhost:${PORT}/api/health`);
+  });
+}
+
+module.exports = app;
+
