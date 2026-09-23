@@ -1,33 +1,23 @@
 import React, { useState } from 'react';
 import {
   User,
-  Mail,
   Building2,
   BadgeCheck,
   ShieldCheck,
-  Calendar,
   CheckCircle2,
   Lock,
-  Phone,
-  FileText,
   Save,
   KeyRound,
   AlertCircle,
   Award,
   Sparkles,
-  Smartphone,
   Bell,
   Palette,
   Clock,
-  Zap,
   Globe,
-  Download,
   Flame,
-  Star,
-  Check,
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
-import useTheme from '../hooks/useTheme';
 import api from '../services/api';
 
 const AVATAR_OPTIONS = [
@@ -37,6 +27,15 @@ const AVATAR_OPTIONS = [
   { id: 'star', emoji: '🌟', label: 'Achiever', bg: 'bg-amber-500' },
   { id: 'prof', emoji: '👨‍🏫', label: 'Professor', bg: 'bg-emerald-600' },
   { id: 'shield', emoji: '🛡️', label: 'Guardian', bg: 'bg-rose-600' },
+];
+
+const THEME_OPTIONS = [
+  { id: 'indigo', name: 'Academic Indigo', color: '#4F46E5', preview: 'bg-indigo-600' },
+  { id: 'emerald', name: 'Faculty Emerald', color: '#059669', preview: 'bg-emerald-600' },
+  { id: 'sky', name: 'Cyber Sky', color: '#0284C7', preview: 'bg-sky-600' },
+  { id: 'purple', name: 'Deep Violet', color: '#7C3AED', preview: 'bg-purple-600' },
+  { id: 'amber', name: 'Warm Amber', color: '#D97706', preview: 'bg-amber-600' },
+  { id: 'rose', name: 'Crimson Rose', color: '#E11D48', preview: 'bg-rose-600' },
 ];
 
 const BADGES = [
@@ -76,7 +75,6 @@ const BADGES = [
 
 const ProfilePage = () => {
   const { user, isClerkActive } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
 
   const [activeTab, setActiveTab] = useState('overview');
 

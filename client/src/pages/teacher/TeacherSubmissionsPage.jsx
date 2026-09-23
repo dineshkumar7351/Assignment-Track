@@ -1,28 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import {
   CheckSquare,
   Search,
-  Filter,
   Download,
-  Calendar,
   Clock,
-  ExternalLink,
   RefreshCw,
-  Eye,
   AlertTriangle,
   Award,
-  Layers,
   FileText,
-  User,
   History,
   X,
   CheckCircle2,
-  Edit3,
-  MessageSquare,
 } from 'lucide-react';
 import assignmentService from '../../services/assignmentService';
 import EvaluationModal from '../../components/evaluation/EvaluationModal';
+import { getFileDownloadUrl } from '../../utils/fileUrl';
 
 const TeacherSubmissionsPage = () => {
   const [submissions, setSubmissions] = useState([]);
@@ -95,20 +87,10 @@ const TeacherSubmissionsPage = () => {
     setEvalModal({ isOpen: true, submission: sub });
   };
 
-  const handleEvaluationSuccess = (updatedData) => {
+  const handleEvaluationSuccess = () => {
     setSuccessToast(`Successfully evaluated submission for ${evalModal.submission?.student?.fullName || 'student'}`);
     setTimeout(() => setSuccessToast(''), 4000);
     loadSubmissions();
-  };
-
-  // Resolve download link
-  const getFileDownloadUrl = (url) => {
-    if (!url) return '#';
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    return `${apiBase.replace(/\/api$/, '')}${url}`;
   };
 
   const gradedCount = submissions.filter((s) => s.status === 'graded').length;

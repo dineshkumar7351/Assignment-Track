@@ -13,9 +13,13 @@ const api = axios.create({
   },
 });
 
-// Request interceptor for future token injection
+// Request interceptor for token injection
 api.interceptors.request.use(
   (config) => {
+    const token = localStorage.getItem('token');
+    if (token && !config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {

@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import similarityService from '../../services/similarityService';
+import { getFileDownloadUrl } from '../../utils/fileUrl';
 
 const TeacherSimilarityComparePage = () => {
   const { id1, id2 } = useParams();
@@ -45,16 +46,6 @@ const TeacherSimilarityComparePage = () => {
       fetchComparison();
     }
   }, [id1, id2]);
-
-  // Resolve download link
-  const getFileDownloadUrl = (url) => {
-    if (!url) return '#';
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    return `${apiBase.replace(/\/api$/, '')}${url}`;
-  };
 
   // Helper to render text with highlighted matching phrases
   const renderHighlightedText = (text, phrases, activeFilter) => {

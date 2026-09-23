@@ -18,7 +18,8 @@ const aiRoutes = require('./routes/aiRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
-// Load environment variables from .env file
+// Load environment variables from server/.env and root .env
+dotenv.config({ path: path.join(__dirname, '.env') });
 dotenv.config();
 
 // Connect to MongoDB
@@ -42,8 +43,17 @@ app.use(express.json());
 // Middleware: Body parser for URL-encoded form data
 app.use(express.urlencoded({ extended: true }));
 
-// Serve local uploads statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Middleware: Connect DB on requests (cached for serverless)
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    try {
+      await connectDB();
+    } catch (e) {
+      console.error('[DB Middleware Error]:', e.message);
+    }
+  }
+  next();
+});
 
 // API Routes
 app.use('/api/health', healthRoutes);
@@ -61,6 +71,9 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
 
 const fs = require('fs');
+
+// Static uploads directory for locally uploaded student deliverables
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Serve static client build if present (production / deployment)
 const clientDistPath = path.join(__dirname, '../client/dist');

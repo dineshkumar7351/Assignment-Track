@@ -19,6 +19,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import assignmentService from '../../services/assignmentService';
+import { getFileDownloadUrl } from '../../utils/fileUrl';
 
 const StudentSubmitPage = () => {
   const { id } = useParams();
@@ -145,17 +146,6 @@ const StudentSubmitPage = () => {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  // Resolve file URL for download/preview
-  const getFileDownloadUrl = (url) => {
-    if (!url) return '#';
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    // Local upload served by backend
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    return `${apiBase.replace(/\/api$/, '')}${url}`;
   };
 
   if (loading) {

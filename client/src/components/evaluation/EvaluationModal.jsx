@@ -3,7 +3,6 @@ import {
   X,
   Award,
   CheckCircle2,
-  Clock,
   AlertTriangle,
   Download,
   FileText,
@@ -12,9 +11,9 @@ import {
   Calendar,
   Send,
   RefreshCw,
-  Sparkles,
 } from 'lucide-react';
 import evaluationService from '../../services/evaluationService';
+import { getFileDownloadUrl } from '../../utils/fileUrl';
 
 const EvaluationModal = ({ isOpen, onClose, submission, onSuccess }) => {
   const [marks, setMarks] = useState('');
@@ -48,11 +47,12 @@ const EvaluationModal = ({ isOpen, onClose, submission, onSuccess }) => {
     }
 
     // Try to fetch full evaluation record from backend
+    let isMounted = true;
     const loadEvaluationData = async () => {
       setFetchLoading(true);
       try {
         const res = await evaluationService.getEvaluationBySubmissionId(submission._id);
-        if (res.success && res.data) {
+        if (isMounted && res.success && res.data) {
           setExistingEvaluation(res.data);
           if (res.data.marks !== undefined && res.data.marks !== null) {
             setMarks(res.data.marks.toString());
@@ -64,11 +64,15 @@ const EvaluationModal = ({ isOpen, onClose, submission, onSuccess }) => {
       } catch {
         // Fallback to submission data already provided
       } finally {
-        setFetchLoading(false);
+        if (isMounted) setFetchLoading(false);
       }
     };
 
     loadEvaluationData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [isOpen, submission]);
 
   if (!isOpen || !submission) return null;
@@ -81,16 +85,6 @@ const EvaluationModal = ({ isOpen, onClose, submission, onSuccess }) => {
   const submittedDate = submission.submittedAt ? new Date(submission.submittedAt) : new Date();
   const deadlineDate = assignment.deadline ? new Date(assignment.deadline) : null;
   const isLate = deadlineDate ? submittedDate > deadlineDate : false;
-
-  // Resolve download url
-  const getFileDownloadUrl = (url) => {
-    if (!url) return '#';
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    return `${apiBase.replace(/\/api$/, '')}${url}`;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
