@@ -55,20 +55,25 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// API Routes
-app.use('/api/health', healthRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/assignments', assignmentRoutes);
-app.use('/api/subjects', subjectRoutes);
-app.use('/api/submissions', submissionRoutes);
-app.use('/api/evaluations', evaluationRoutes);
-app.use('/api/similarity', similarityRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/calendar', calendarRoutes);
-app.use('/api/analytics', analyticsRoutes);
-app.use('/api/ai', aiRoutes);
-app.use('/api/admin', adminRoutes);
+// Mount API Routes helper for standard and serverless rewritten path matching
+const mountRoutes = (prefix) => {
+  app.use(`${prefix}/health`, healthRoutes);
+  app.use(`${prefix}/auth`, authRoutes);
+  app.use(`${prefix}/dashboard`, dashboardRoutes);
+  app.use(`${prefix}/assignments`, assignmentRoutes);
+  app.use(`${prefix}/subjects`, subjectRoutes);
+  app.use(`${prefix}/submissions`, submissionRoutes);
+  app.use(`${prefix}/evaluations`, evaluationRoutes);
+  app.use(`${prefix}/similarity`, similarityRoutes);
+  app.use(`${prefix}/notifications`, notificationRoutes);
+  app.use(`${prefix}/calendar`, calendarRoutes);
+  app.use(`${prefix}/analytics`, analyticsRoutes);
+  app.use(`${prefix}/ai`, aiRoutes);
+  app.use(`${prefix}/admin`, adminRoutes);
+};
+
+mountRoutes('/api');
+mountRoutes('');
 
 const fs = require('fs');
 
