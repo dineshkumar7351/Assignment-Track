@@ -14,9 +14,9 @@ const BaseLayout = () => {
 
   const isCurrent = (path) => location.pathname === path;
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login', { replace: true });
     setMobileMenuOpen(false);
   };
 

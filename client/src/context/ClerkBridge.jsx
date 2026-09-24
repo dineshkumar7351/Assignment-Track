@@ -1,14 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useUser, useAuth, useClerk } from '@clerk/clerk-react';
 import api from '../services/api';
 
-export const ClerkBridge = ({ onSyncUser, onClerkSignOut }) => {
+export const ClerkBridge = ({ onSyncUser, onClerkSignOut, registerClerkSignOut }) => {
   const { user: clerkUser, isLoaded, isSignedIn } = useUser();
   const { getToken } = useAuth();
   const { signOut } = useClerk();
 
+  const isSigningOutRef = useRef(false);
+
   useEffect(() => {
-    if (!isLoaded) return;
+    if (registerClerkSignOut) {
+      registerClerkSignOut(async () => {
+        isSigningOutRef.current = true;
+        try {
+          await signOut();
+        } catch (e) {
+          console.warn('Clerk signOut error:', e);
+        } finally {
+          setTimeout(() => {
+            isSigningOutRef.current = false;
+          }, 1000);
+        }
+      });
+    }
+  }, [registerClerkSignOut, signOut]);
+
+  useEffect(() => {
+    if (!isLoaded || isSigningOutRef.current) return;
 
     if (isSignedIn && clerkUser) {
       let isMounted = true;

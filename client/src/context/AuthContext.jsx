@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import api from '../services/api';
 import { AuthContext } from './authContextInstance';
 import { isClerkConfigured } from './ClerkProviderWrapper';
@@ -16,11 +16,37 @@ export const AuthProvider = ({ children }) => {
 
   const [token, setToken] = useState(() => localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(true);
+  const clerkSignOutRef = useRef(null);
 
-  const logout = useCallback(() => {
+  const registerClerkSignOut = useCallback((fn) => {
+    clerkSignOutRef.current = fn;
+  }, []);
+
+  const logout = useCallback(async () => {
+    // 1. Clear Clerk authentication if active
+    if (clerkSignOutRef.current) {
+      try {
+        await clerkSignOutRef.current();
+      } catch (e) {
+        console.warn('Clerk sign out error:', e);
+      }
+    } else if (typeof window !== 'undefined' && window.Clerk?.signOut) {
+      try {
+        await window.Clerk.signOut();
+      } catch (e) {
+        console.warn('Window Clerk sign out error:', e);
+      }
+    }
+
+    // 2. Clear Local Storage and Session Storage
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    sessionStorage.clear();
+
+    // 3. Reset Axios authorization headers
     delete api.defaults.headers.common['Authorization'];
+
+    // 4. Reset React state
     setUser(null);
     setToken(null);
   }, []);
@@ -32,7 +58,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const handleClerkSignOut = useCallback(() => {
-    // If Clerk was signed out, clean local session
+    // If Clerk was signed out externally, clean local session
     if (isClerkConfigured && user?.clerkId) {
       logout();
     }
@@ -145,10 +171,10 @@ export const AuthProvider = ({ children }) => {
         <ClerkBridge
           onSyncUser={handleClerkSyncUser}
           onClerkSignOut={handleClerkSignOut}
+          registerClerkSignOut={registerClerkSignOut}
         />
       )}
       {children}
     </AuthContext.Provider>
   );
 };
-

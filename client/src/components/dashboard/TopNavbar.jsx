@@ -17,9 +17,9 @@ const TopNavbar = ({ onOpenSidebar }) => {
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login', { replace: true });
   };
 
   const roleColor = {
