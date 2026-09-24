@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { GraduationCap, ArrowLeft, LogIn, Mail, Lock } from 'lucide-react';
+import { GraduationCap, ArrowLeft, LogIn, Mail, Lock, Sparkles, Shield, User, Award } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
@@ -119,31 +119,34 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="relative min-h-[85vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      {/* Background glow orbs */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-indigo-500/15 dark:bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none -z-10" />
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <Link to="/" className="inline-flex items-center gap-2 group mb-6">
-          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-xs group-hover:bg-indigo-700 transition-colors">
+        <Link to="/" className="inline-flex items-center gap-2.5 group mb-6 hover:scale-105 transition-transform">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
             <GraduationCap className="w-6 h-6" />
           </div>
-          <span className="font-bold text-xl text-slate-900 dark:text-white">
+          <span className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
             Smart Assignment Tracker
           </span>
         </Link>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Sign In
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          Welcome Back
         </h1>
-        <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-          Enter your institutional credentials to access your dashboard
+        <p className="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
+          Enter your credentials to access your academic dashboard
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
         {isClerkActive && !showDirectForm ? (
-          <div className="bg-white dark:bg-slate-900 py-6 px-4 shadow-sm rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors">
+          <div className="glass-card py-6 px-4 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
             <ClerkSignInCard fallbackToggle={() => setShowDirectForm(true)} />
           </div>
         ) : (
-          <div className="bg-white dark:bg-slate-900 py-8 px-6 shadow-xs rounded-2xl border border-slate-200 dark:border-slate-800 sm:px-10 transition-colors">
+          <div className="glass-card py-8 px-6 sm:px-10 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
             {/* Server error message */}
             {serverError && (
               <Alert
@@ -190,45 +193,48 @@ const LoginPage = () => {
                   icon={LogIn}
                   className="w-full"
                 >
-                  Sign In
+                  Sign In to Portal
                 </Button>
               </div>
             </form>
 
             {/* Quick 1-Click Demo Login for All Roles */}
-            <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800">
-              <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center mb-2.5">
-                ⚡ 1-Click Instant Demo Login
-              </p>
-              <div className="grid grid-cols-3 gap-2">
+            <div className="mt-7 pt-6 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-center gap-1.5 mb-3">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  1-Click Instant Demo Login
+                </p>
+              </div>
+              <div className="grid grid-cols-3 gap-2.5">
                 <button
                   type="button"
                   onClick={() => handleQuickDemoLogin('john.student@college.edu', 'Password@123')}
-                  className="flex flex-col items-center justify-center p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 transition-all text-indigo-700 dark:text-indigo-300 group cursor-pointer"
+                  className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200/80 dark:border-indigo-800/80 transition-all text-indigo-700 dark:text-indigo-300 group cursor-pointer hover:scale-[1.03]"
                 >
-                  <span className="text-base">🎓</span>
-                  <span className="text-xs font-bold mt-0.5">Student</span>
-                  <span className="text-[9px] text-slate-500 dark:text-slate-400">John</span>
+                  <span className="text-lg mb-0.5">🎓</span>
+                  <span className="text-xs font-bold">Student</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">John</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleQuickDemoLogin('sarah.teacher@college.edu', 'Password@123')}
-                  className="flex flex-col items-center justify-center p-2 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 transition-all text-purple-700 dark:text-purple-300 group cursor-pointer"
+                  className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800/80 transition-all text-emerald-700 dark:text-emerald-300 group cursor-pointer hover:scale-[1.03]"
                 >
-                  <span className="text-base">👨‍🏫</span>
-                  <span className="text-xs font-bold mt-0.5">Teacher</span>
-                  <span className="text-[9px] text-slate-500 dark:text-slate-400">Dr. Sarah</span>
+                  <span className="text-lg mb-0.5">👨‍🏫</span>
+                  <span className="text-xs font-bold">Teacher</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">Dr. Sarah</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleQuickDemoLogin('admin@college.edu', 'Admin@123456')}
-                  className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 transition-all text-emerald-700 dark:text-emerald-300 group cursor-pointer"
+                  className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-rose-50/80 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200/80 dark:border-rose-800/80 transition-all text-rose-700 dark:text-rose-300 group cursor-pointer hover:scale-[1.03]"
                 >
-                  <span className="text-base">🛡️</span>
-                  <span className="text-xs font-bold mt-0.5">Admin</span>
-                  <span className="text-[9px] text-slate-500 dark:text-slate-400">Campus</span>
+                  <span className="text-lg mb-0.5">🛡️</span>
+                  <span className="text-xs font-bold">Admin</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">Campus</span>
                 </button>
               </div>
             </div>
@@ -238,16 +244,16 @@ const LoginPage = () => {
                 <button
                   type="button"
                   onClick={() => setShowDirectForm(false)}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-bold"
                 >
-                  ← Back to Clerk Social / Google Sign In
+                  ← Back to Social / Google Sign In
                 </button>
               </div>
             )}
 
-            <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-6 text-center text-xs text-slate-600 dark:text-slate-400">
+            <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-6 text-center text-xs text-slate-600 dark:text-slate-400 font-medium">
               Don't have an account?{' '}
-              <Link to="/register" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
+              <Link to="/register" className="font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
                 Create an Account
               </Link>
             </div>
@@ -257,7 +263,7 @@ const LoginPage = () => {
         <div className="mt-6 text-center">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Home</span>

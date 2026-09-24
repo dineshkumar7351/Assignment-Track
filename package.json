@@ -7,6 +7,7 @@
     "build": "node build.js",
     "vercel-build": "node build.js",
     "start": "node server/server.js",
+    "mobile": "npm --prefix mobile start",
     "seed:admin": "node server/scripts/seedAdmin.js",
     "seed:academic": "node server/scripts/seedAcademicData.js"
   },
@@ -30,5 +31,10 @@
     "mongoose": "^8.9.5",
     "multer": "^2.3.0",
     "pdf-parse": "^2.4.5"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5",
+    "cross-env": "^10.1.0",
+    "electron": "^44.4.5"
   }
 }

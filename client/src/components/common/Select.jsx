@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * Reusable Select component for dropdown fields (e.g. Department)
+ * Reusable Select component for dropdown fields with dark mode support
  */
 const Select = ({
   id,
@@ -23,7 +23,7 @@ const Select = ({
       {label && (
         <label
           htmlFor={id || name}
-          className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5"
+          className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5"
         >
           {label} {required && <span className="text-rose-500">*</span>}
         </label>
@@ -31,7 +31,7 @@ const Select = ({
 
       <div className="relative">
         {Icon && (
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
             <Icon className="w-4 h-4" />
           </div>
         )}
@@ -45,20 +45,21 @@ const Select = ({
           required={required}
           className={`w-full ${
             Icon ? 'pl-10' : 'pl-3.5'
-          } pr-8 py-2.5 bg-white border ${
+          } pr-8 py-2.5 bg-white dark:bg-slate-800/80 border ${
             error
-              ? 'border-rose-300 focus:ring-rose-500 focus:border-rose-500'
-              : 'border-slate-300 focus:ring-indigo-500 focus:border-transparent'
-          } rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed transition-all appearance-none cursor-pointer ${className}`}
+              ? 'border-rose-400 dark:border-rose-500 focus:ring-rose-500 focus:border-rose-500'
+              : 'border-slate-200 dark:border-slate-700/80 focus:ring-indigo-500 focus:border-transparent'
+          } rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 disabled:bg-slate-50 dark:disabled:bg-slate-900 disabled:text-slate-400 disabled:cursor-not-allowed transition-all appearance-none cursor-pointer shadow-xs ${className}`}
           {...props}
         >
-          <option value="" disabled>
+          <option value="" disabled className="dark:bg-slate-800">
             {placeholder}
           </option>
           {options.map((opt) => (
             <option
               key={typeof opt === 'string' ? opt : opt.value}
               value={typeof opt === 'string' ? opt : opt.value}
+              className="dark:bg-slate-800 dark:text-white"
             >
               {typeof opt === 'string' ? opt : opt.label}
             </option>
@@ -66,7 +67,7 @@ const Select = ({
         </select>
 
         {/* Custom dropdown arrow */}
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400 dark:text-slate-500">
           <svg
             className="w-4 h-4"
             fill="none"
@@ -78,7 +79,7 @@ const Select = ({
         </div>
       </div>
 
-      {error && <p className="mt-1 text-xs text-rose-600 font-medium">{error}</p>}
+      {error && <p className="mt-1.5 text-xs text-rose-600 dark:text-rose-400 font-semibold">{error}</p>}
     </div>
   );
 };

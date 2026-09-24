@@ -1,67 +1,64 @@
 import React from 'react';
-import { AlertCircle, CheckCircle2, Info, AlertTriangle, X } from 'lucide-react';
+import { AlertCircle, CheckCircle, Info, AlertTriangle, X } from 'lucide-react';
 
 /**
- * Reusable Alert banner for validation/server error and success messages
+ * Reusable Alert component for notifications & errors with modern frosted borders
  */
 const Alert = ({
-  type = 'error', // 'error' | 'success' | 'info' | 'warning'
+  type = 'info',
+  title,
   message,
+  children,
   onClose,
   className = '',
 }) => {
-  if (!message) return null;
-
-  const config = {
+  const configs = {
     error: {
-      bgColor: 'bg-rose-50',
-      borderColor: 'border-rose-200',
-      textColor: 'text-rose-800',
-      iconColor: 'text-rose-600',
-      Icon: AlertCircle,
+      bg: 'bg-rose-50/90 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60 text-rose-800 dark:text-rose-200',
+      icon: AlertCircle,
+      iconColor: 'text-rose-600 dark:text-rose-400',
     },
     success: {
-      bgColor: 'bg-emerald-50',
-      borderColor: 'border-emerald-200',
-      textColor: 'text-emerald-800',
-      iconColor: 'text-emerald-600',
-      Icon: CheckCircle2,
-    },
-    info: {
-      bgColor: 'bg-indigo-50',
-      borderColor: 'border-indigo-200',
-      textColor: 'text-indigo-800',
-      iconColor: 'text-indigo-600',
-      Icon: Info,
+      bg: 'bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-200',
+      icon: CheckCircle,
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
     },
     warning: {
-      bgColor: 'bg-amber-50',
-      borderColor: 'border-amber-200',
-      textColor: 'text-amber-800',
-      iconColor: 'text-amber-600',
-      Icon: AlertTriangle,
+      bg: 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-200',
+      icon: AlertTriangle,
+      iconColor: 'text-amber-600 dark:text-amber-400',
+    },
+    info: {
+      bg: 'bg-indigo-50/90 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/60 text-indigo-800 dark:text-indigo-200',
+      icon: Info,
+      iconColor: 'text-indigo-600 dark:text-indigo-400',
     },
   };
 
-  const { bgColor, borderColor, textColor, iconColor, Icon } =
-    config[type] || config.error;
+  const config = configs[type] || configs.info;
+  const Icon = config.icon;
 
   return (
     <div
-      className={`p-3.5 rounded-xl border flex items-start justify-between gap-3 text-xs font-medium ${bgColor} ${borderColor} ${textColor} ${className}`}
+      className={`flex items-start gap-3 p-4 rounded-2xl border backdrop-blur-xs transition-all ${config.bg} ${className}`}
+      role="alert"
     >
-      <div className="flex items-start gap-2.5">
-        <Icon className={`w-4 h-4 shrink-0 mt-0.5 ${iconColor}`} />
-        <span className="leading-relaxed">{message}</span>
+      <Icon className={`w-5 h-5 shrink-0 mt-0.5 ${config.iconColor}`} />
+
+      <div className="flex-1 text-xs sm:text-sm">
+        {title && <h5 className="font-bold mb-0.5">{title}</h5>}
+        {message && <p className="leading-relaxed font-medium">{message}</p>}
+        {children}
       </div>
 
       {onClose && (
         <button
           type="button"
           onClick={onClose}
-          className="text-slate-400 hover:text-slate-600 transition-colors"
+          className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+          aria-label="Close"
         >
-          <X className="w-3.5 h-3.5" />
+          <X className="w-4 h-4" />
         </button>
       )}
     </div>

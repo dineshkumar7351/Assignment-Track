@@ -3,16 +3,11 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/dashboard/Sidebar';
 import TopNavbar from '../components/dashboard/TopNavbar';
 import MobileBottomNav from '../components/dashboard/MobileBottomNav';
-import PwaInstallBanner from '../components/PwaInstallBanner';
-
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors">
-      {/* PWA 1-Click Install App Banner */}
-      <PwaInstallBanner />
-
       <div className="flex-1 flex">
         {/* Dynamic Role Sidebar (Drawer on mobile, fixed on desktop) */}
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
