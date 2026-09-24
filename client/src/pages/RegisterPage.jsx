@@ -158,31 +158,6 @@ const RegisterPage = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        {/* Active Session Notice Banner */}
-        {user && (
-          <div className="mb-4 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-700 dark:text-slate-300 flex items-center justify-between shadow-xs">
-            <div>
-              <p className="font-bold text-indigo-700 dark:text-indigo-300">Signed in as: {user.fullName}</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 capitalize">{user.role} Account</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Link
-                to="/dashboard"
-                className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 transition-colors shadow-xs"
-              >
-                Go to Dashboard
-              </Link>
-              <button
-                type="button"
-                onClick={logout}
-                className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/40"
-                title="Logout"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
 
         {isClerkActive && showClerkForm ? (
           <div className="glass-card py-6 px-4 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
