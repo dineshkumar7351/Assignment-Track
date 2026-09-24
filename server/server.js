@@ -43,14 +43,12 @@ app.use(express.json());
 // Middleware: Body parser for URL-encoded form data
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware: Connect DB on requests (cached for serverless)
+// Middleware: Ensure MongoDB is connected for every serverless function request
 app.use(async (req, res, next) => {
-  if (req.path.startsWith('/api')) {
-    try {
-      await connectDB();
-    } catch (e) {
-      console.error('[DB Middleware Error]:', e.message);
-    }
+  try {
+    await connectDB();
+  } catch (e) {
+    console.error('[DB Middleware Error]:', e.message);
   }
   next();
 });
@@ -87,7 +85,7 @@ if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
 
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/health') || req.path.startsWith('/auth')) {
       return next();
     }
     const indexPath = path.join(clientDistPath, 'index.html');
@@ -131,4 +129,3 @@ if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
 }
 
 module.exports = app;
-

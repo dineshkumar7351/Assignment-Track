@@ -19,26 +19,29 @@ const connectDB = async () => {
   const mongoURI = process.env.MONGO_URI;
 
   if (!mongoURI || mongoURI.trim() === '') {
-    console.warn('\n⚠️  [MongoDB Warning]: MONGO_URI environment variable is not defined.');
+    console.warn('\n⚠️ [MongoDB Warning]: MONGO_URI environment variable is not defined.');
     console.warn('👉 To connect a database, set MONGO_URI in your Vercel Environment Variables or .env file.\n');
     return null;
   }
 
   if (!cached.promise) {
     const opts = {
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 8000,
       socketTimeoutMS: 45000,
+      bufferCommands: false, // Prevents hanging operations if not connected
     };
 
-    cached.promise = mongoose.connect(mongoURI, opts).then((mongooseInstance) => {
-      console.log(`✅ [MongoDB Connected]: Host -> ${mongooseInstance.connection.host}`);
-      return mongooseInstance;
-    }).catch((err) => {
-      cached.promise = null;
-      console.error('\n❌ [MongoDB Connection Error]: Failed to establish connection to database.');
-      console.error(`Details: ${err.message}`);
-      throw err;
-    });
+    cached.promise = mongoose
+      .connect(mongoURI, opts)
+      .then((mongooseInstance) => {
+        console.log(`✅ [MongoDB Connected]: Host -> ${mongooseInstance.connection.host}`);
+        return mongooseInstance;
+      })
+      .catch((err) => {
+        cached.promise = null;
+        console.error('\n❌ [MongoDB Connection Error]:', err.message);
+        return null;
+      });
   }
 
   try {
