@@ -9,7 +9,7 @@ import {
   Lock,
   Building2,
   BadgeCheck,
-  Sparkles,
+  LogOut,
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import Input from '../components/common/Input';
@@ -31,8 +31,8 @@ const DEPARTMENTS = [
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register, isClerkActive } = useAuth();
-  const [showDirectForm, setShowDirectForm] = useState(false);
+  const { register, user, logout, isClerkActive } = useAuth();
+  const [showClerkForm, setShowClerkForm] = useState(false);
 
   const [role, setRole] = useState('student');
   const [formData, setFormData] = useState({
@@ -158,9 +158,44 @@ const RegisterPage = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        {isClerkActive && !showDirectForm ? (
+        {/* Active Session Notice Banner */}
+        {user && (
+          <div className="mb-4 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-700 dark:text-slate-300 flex items-center justify-between shadow-xs">
+            <div>
+              <p className="font-bold text-indigo-700 dark:text-indigo-300">Signed in as: {user.fullName}</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 capitalize">{user.role} Account</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/dashboard"
+                className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 transition-colors shadow-xs"
+              >
+                Go to Dashboard
+              </Link>
+              <button
+                type="button"
+                onClick={logout}
+                className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/40"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isClerkActive && showClerkForm ? (
           <div className="glass-card py-6 px-4 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
-            <ClerkSignUpCard fallbackToggle={() => setShowDirectForm(true)} />
+            <ClerkSignUpCard fallbackToggle={() => setShowClerkForm(false)} />
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => setShowClerkForm(false)}
+                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-bold"
+              >
+                ← Back to Direct Registration Form
+              </button>
+            </div>
           </div>
         ) : (
           <div className="glass-card py-8 px-6 sm:px-10 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
@@ -320,10 +355,10 @@ const RegisterPage = () => {
               <div className="mt-4 text-center">
                 <button
                   type="button"
-                  onClick={() => setShowDirectForm(false)}
+                  onClick={() => setShowClerkForm(true)}
                   className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-bold"
                 >
-                  ← Back to Quick Sign Up
+                  Or Quick Sign Up via Social / Google (Clerk) →
                 </button>
               </div>
             )}

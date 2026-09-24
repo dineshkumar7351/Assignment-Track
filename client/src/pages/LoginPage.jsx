@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { GraduationCap, ArrowLeft, LogIn, Mail, Lock, Sparkles, Shield, User, Award } from 'lucide-react';
+import { GraduationCap, ArrowLeft, LogIn, Mail, Lock, Sparkles, LayoutDashboard, LogOut } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
@@ -10,8 +10,8 @@ import { ClerkSignInCard } from '../components/ClerkAuthCard';
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, user, isClerkActive } = useAuth();
-  const [showDirectForm, setShowDirectForm] = useState(false);
+  const { login, user, logout, isClerkActive } = useAuth();
+  const [showClerkForm, setShowClerkForm] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -21,19 +21,6 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  // If user is already authenticated, redirect to their role dashboard
-  useEffect(() => {
-    if (user) {
-      const targetPath =
-        user.role === 'admin'
-          ? '/admin/dashboard'
-          : user.role === 'teacher'
-          ? '/teacher/dashboard'
-          : '/student/dashboard';
-      navigate(targetPath, { replace: true });
-    }
-  }, [user, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -133,7 +120,7 @@ const LoginPage = () => {
           </span>
         </Link>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          Welcome Back
+          Sign In
         </h1>
         <p className="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
           Enter your credentials to access your academic dashboard
@@ -141,9 +128,44 @@ const LoginPage = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        {isClerkActive && !showDirectForm ? (
+        {/* Active Session Notice Banner if user is already logged in */}
+        {user && (
+          <div className="mb-4 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-700 dark:text-slate-300 flex items-center justify-between shadow-xs">
+            <div>
+              <p className="font-bold text-indigo-700 dark:text-indigo-300">Signed in as: {user.fullName}</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 capitalize">{user.role} Account</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/dashboard"
+                className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 transition-colors shadow-xs"
+              >
+                Go to Dashboard
+              </Link>
+              <button
+                type="button"
+                onClick={logout}
+                className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/40"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isClerkActive && showClerkForm ? (
           <div className="glass-card py-6 px-4 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
-            <ClerkSignInCard fallbackToggle={() => setShowDirectForm(true)} />
+            <ClerkSignInCard fallbackToggle={() => setShowClerkForm(false)} />
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => setShowClerkForm(false)}
+                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-bold"
+              >
+                ← Back to Direct Email/Password Sign In
+              </button>
+            </div>
           </div>
         ) : (
           <div className="glass-card py-8 px-6 sm:px-10 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
@@ -243,10 +265,10 @@ const LoginPage = () => {
               <div className="mt-4 text-center">
                 <button
                   type="button"
-                  onClick={() => setShowDirectForm(false)}
+                  onClick={() => setShowClerkForm(true)}
                   className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-bold"
                 >
-                  ← Back to Social / Google Sign In
+                  Or Sign In via Social / Google (Clerk) →
                 </button>
               </div>
             )}
