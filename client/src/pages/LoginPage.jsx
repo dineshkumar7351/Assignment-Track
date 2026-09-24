@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { GraduationCap, ArrowLeft, LogIn, Mail, Lock, Sparkles, LayoutDashboard, LogOut } from 'lucide-react';
+import { GraduationCap, ArrowLeft, LogIn, Mail, Lock, Sparkles, LayoutDashboard, LogOut, UserCheck } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
@@ -128,27 +128,38 @@ const LoginPage = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        {/* Active Session Notice Banner if user is already logged in */}
+        {/* Active Session Notice Banner with 1-Click Logout / Switch Account */}
         {user && (
-          <div className="mb-4 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-700 dark:text-slate-300 flex items-center justify-between shadow-xs">
-            <div>
-              <p className="font-bold text-indigo-700 dark:text-indigo-300">Signed in as: {user.fullName}</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 capitalize">{user.role} Account</p>
+          <div className="mb-5 p-4 rounded-2xl bg-white dark:bg-slate-900 border-2 border-indigo-500/30 shadow-md text-xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 font-bold text-sm">
+                <UserCheck className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-extrabold text-sm text-slate-900 dark:text-white truncate">
+                  Currently Signed in as {user.fullName || user.name}
+                </p>
+                <p className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider">
+                  {user.role} Account • {user.email}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
               <Link
                 to="/dashboard"
-                className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 transition-colors shadow-xs"
+                className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 transition-colors shadow-xs"
               >
-                Go to Dashboard
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                <span>Go to Dashboard</span>
               </Link>
               <button
                 type="button"
                 onClick={logout}
-                className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-950/40"
-                title="Logout"
+                className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 font-bold text-xs transition-colors cursor-pointer"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Logout</span>
               </button>
             </div>
           </div>
