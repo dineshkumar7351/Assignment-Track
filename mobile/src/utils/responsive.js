@@ -70,9 +70,13 @@ export function useResponsive() {
     scale: s,
     verticalScale: vs,
     moderateScale: ms,
+    ms,
+    s,
+    vs,
+    padding: screenPadding,
+    screenPadding,
     containerStyle,
     metricColumns,
-    screenPadding,
   };
 }
 
