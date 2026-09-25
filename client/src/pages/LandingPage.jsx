@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Calendar,
@@ -35,6 +35,7 @@ import {
   Play,
   Copy,
   ExternalLink,
+  X,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -44,6 +45,7 @@ import {
   YAxis,
   Tooltip,
 } from 'recharts';
+import heroImg from '../assets/hero-3d.jpg';
 
 const mockPerformanceData = [
   { week: 'Wk 1', submissions: 45, avgScore: 78 },
@@ -63,24 +65,27 @@ const liveCampusActivity = [
 
 const faqs = [
   {
-    q: 'How does the N-Gram Plagiarism & Similarity scanner work?',
-    a: 'Our built-in similarity engine decomposes submissions into multi-token n-grams and computes cosine similarity matrices against all current and historical cohort submissions, generating real-time match reports with side-by-side textual diffs.',
+    q: 'How does AssignTrack help students stay on top of deadlines?',
+    a: 'AssignTrack automatically syncs assignments from all enrolled courses into a single real-time timeline. It provides push notifications, milestone progress trackers, and dynamic calendar sync so you never miss a submission.',
   },
   {
-    q: 'Can students access AI tutoring without cheating risks?',
-    a: 'Yes! The AI Academic Assistant is engineered with pedagogical guidelines—it provides structural outlines, concept explanations, and debugging hints rather than raw assignment answers.',
+    q: 'How does the built-in Plagiarism & Similarity scanner work?',
+    a: 'Our anti-plagiarism engine evaluates student submissions using cosine n-gram similarity matrices across historical and cohort submissions, providing faculty with instant percentage match reports and color-coded textual diffs.',
   },
   {
-    q: 'Is Smart Assignment Tracker compatible with mobile devices?',
-    a: 'Absolutely. The platform features an ultra-responsive web application as well as a dedicated React Native mobile app with offline local caching and push notifications.',
+    q: 'Can students chat with the AI Study Companion safely?',
+    a: 'Yes! The AI Academic Assistant is designed with strict pedagogical boundaries: it provides concept explanations, code debugging guidance, and structured outlines without giving away direct answers.',
   },
   {
-    q: 'How are different roles (Student, Teacher, Admin) authenticated?',
-    a: 'Authentication is secured via industry-standard cryptographically signed JSON Web Tokens (JWT) with bcrypt salt rounds and Clerk SSO authentication fallback.',
+    q: 'Is AssignTrack accessible on mobile devices?',
+    a: 'Yes. AssignTrack offers a mobile responsive web application and an Expo React Native mobile app with full offline token caching and push alerts.',
   },
 ];
 
 const LandingPage = () => {
+  // Demo Video Modal state
+  const [showDemoModal, setShowDemoModal] = useState(false);
+
   // Hero interactive demo tab state
   const [activeHeroTab, setActiveHeroTab] = useState('student');
   const [similarityScore, setSimilarityScore] = useState(14);
@@ -99,9 +104,6 @@ const LandingPage = () => {
 
   // Active FAQ Accordion index
   const [openFaq, setOpenFaq] = useState(0);
-
-  // Active Role Persona Card
-  const [activeRoleCard, setActiveRoleCard] = useState('student');
 
   // Compute live estimated GPA
   const computedGrade = Math.round(
@@ -134,77 +136,244 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="relative overflow-hidden space-y-20 sm:space-y-28 py-6 sm:py-12">
-      {/* Dynamic Ambient Background Glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[550px] bg-gradient-to-tr from-indigo-600/20 via-purple-600/15 to-cyan-500/15 dark:from-indigo-600/25 dark:via-purple-600/20 dark:to-cyan-500/20 blur-[140px] rounded-full pointer-events-none -z-10 animate-pulse-subtle" />
-      <div className="absolute top-1/3 -right-20 w-[550px] h-[450px] bg-cyan-500/15 dark:bg-cyan-600/20 blur-[130px] rounded-full pointer-events-none -z-10" />
-      <div className="absolute bottom-1/4 -left-20 w-[600px] h-[500px] bg-indigo-500/15 dark:bg-indigo-700/20 blur-[140px] rounded-full pointer-events-none -z-10" />
+    <div className="relative overflow-hidden space-y-24 sm:space-y-32 py-4 sm:py-8">
+      {/* Background Glows */}
+      <div className="absolute top-0 right-1/4 w-[650px] h-[550px] bg-gradient-to-tr from-purple-400/20 via-indigo-400/20 to-cyan-300/20 dark:from-purple-900/20 dark:via-indigo-900/20 dark:to-cyan-900/15 blur-[140px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute top-1/3 -left-20 w-[550px] h-[450px] bg-indigo-400/15 dark:bg-indigo-900/20 blur-[130px] rounded-full pointer-events-none -z-10" />
 
       {/* ========================================================= */}
-      {/* 1. HERO SECTION & LIVE INTERACTIVE WORKSPACE DEMO */}
+      {/* 1. HERO SECTION (MATCHING DESIGN SPECIFICATION) */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
-        <div className="text-center max-w-4xl mx-auto mb-10">
-          {/* Release Badge */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-indigo-700 dark:text-indigo-300 text-xs font-extrabold shadow-sm border border-indigo-200/80 dark:border-indigo-800/80 mb-6 hover:scale-105 transition-all">
-            <span className="flex h-2.5 w-2.5 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-600 dark:bg-indigo-400"></span>
-            </span>
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-            <span>Smart Academic Workflow System v2.6 • Active JWT & Clerk SSO</span>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-8 lg:pt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          
+          {/* Left Hero Column: Typography & CTAs */}
+          <div className="lg:col-span-6 space-y-8 text-left">
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f3f0ff] dark:bg-indigo-950/60 border border-[#e0e7ff] dark:border-indigo-800 text-[#4338ca] dark:text-indigo-300 text-xs sm:text-sm font-bold shadow-xs">
+              <span className="text-amber-500 font-black text-sm">✦</span>
+              <span>Your Study Companion</span>
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-6xl lg:text-[64px] font-black tracking-tight text-[#0f172a] dark:text-white leading-[1.08]">
+              Never Miss a <br />
+              <span className="bg-gradient-to-r from-[#2563eb] via-[#4338ca] to-[#6366f1] bg-clip-text text-transparent">
+                Deadline Again.
+              </span>
+            </h1>
+
+            {/* Paragraph Subtitle */}
+            <p className="text-base sm:text-lg font-medium text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
+              Organize, track, submit and manage your assignments in one place. Stay focused, be consistent and achieve more in your academic journey.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <Link
+                to="/register"
+                className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-[#3730a3] via-[#4338ca] to-[#4f46e5] hover:from-[#312e81] hover:to-[#4338ca] text-white text-base font-bold rounded-full shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+              >
+                <span>Get Started</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setShowDemoModal(true)}
+                className="inline-flex items-center justify-center gap-3 px-7 py-4 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-[#4338ca] dark:text-indigo-300 text-base font-bold rounded-full border border-slate-200 dark:border-slate-700 shadow-md shadow-slate-200/50 dark:shadow-none hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+              >
+                <div className="w-6 h-6 rounded-full bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center text-[#4338ca] dark:text-indigo-400">
+                  <Play className="w-3.5 h-3.5 fill-[#4338ca] dark:fill-indigo-400 ml-0.5" />
+                </div>
+                <span>Watch Demo</span>
+              </button>
+            </div>
+
+            {/* Bottom Stats Metrics */}
+            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200/80 dark:border-slate-800 max-w-lg">
+              <div>
+                <div className="text-2xl sm:text-3xl font-black text-[#4338ca] dark:text-indigo-400">
+                  1000+
+                </div>
+                <div className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                  Students
+                </div>
+              </div>
+
+              <div>
+                <div className="text-2xl sm:text-3xl font-black text-[#4338ca] dark:text-indigo-400">
+                  50+
+                </div>
+                <div className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                  Faculty Members
+                </div>
+              </div>
+
+              <div>
+                <div className="text-2xl sm:text-3xl font-black text-[#4338ca] dark:text-indigo-400">
+                  95%
+                </div>
+                <div className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                  On-time Submission
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Main Title */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 dark:text-white sm:leading-[1.08] mb-6">
-            Where Academic Excellence <br />
-            <span className="gradient-hero-text">Meets AI Velocity</span>
-          </h1>
+          {/* Right Hero Column: 3D Illustration */}
+          <div className="lg:col-span-6 relative flex items-center justify-center">
+            {/* Ambient circular backdrops */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 via-purple-500/15 to-cyan-400/10 rounded-full blur-3xl -z-10 scale-95" />
+            
+            <div className="relative group w-full max-w-[540px] rounded-3xl overflow-hidden p-2 transition-transform duration-500 hover:scale-[1.01]">
+              <img
+                src={heroImg}
+                alt="AssignTrack 3D Study Companion"
+                className="w-full h-auto object-cover rounded-[22px] shadow-2xl shadow-indigo-500/15 dark:shadow-indigo-950/40 border border-white/60 dark:border-slate-800"
+              />
 
-          {/* Subtitle */}
-          <p className="text-base sm:text-xl font-medium text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed">
-            The intelligent assignment workspace for universities. Automated rubric grading, instant similarity detection, and 24/7 AI tutor guidance for Students, Faculty, and Administrators.
-          </p>
-
-          {/* CTA Group */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-8">
-            <Link
-              to="/register"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-base font-bold rounded-2xl shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
-            >
-              <span>Get Started Free</span>
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              to="/login"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 glass-card hover:bg-slate-100/90 dark:hover:bg-slate-800/90 text-slate-800 dark:text-slate-100 text-base font-bold rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
-            >
-              <Zap className="w-4 h-4 text-amber-500" />
-              <span>Campus Portal Login</span>
-            </Link>
+              {/* Floating Live Badge Overlay */}
+              <div className="absolute bottom-6 left-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-slate-200/80 dark:border-slate-700 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center text-white">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-black text-slate-900 dark:text-white">CS-304 Submitted</div>
+                  <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">100% On Time • No Plagiarism</div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Feature Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-              <Check className="w-3.5 h-3.5 text-emerald-500" /> 100% Anti-Plagiarism Engine
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-              <Check className="w-3.5 h-3.5 text-emerald-500" /> Gemini AI Academic Tutor
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-              <Check className="w-3.5 h-3.5 text-emerald-500" /> Role-Based Access Control
-            </span>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* DEMO MODAL POPUP */}
+      {/* ========================================================= */}
+      {showDemoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-3xl bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <button
+              onClick={() => setShowDemoModal(false)}
+              className="absolute top-5 right-5 p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-2xl bg-[#4338ca] flex items-center justify-center text-white">
+                <Play className="w-5 h-5 fill-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white">AssignTrack Live Platform Demo</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">See how students and faculty streamline submissions and grading</p>
+              </div>
+            </div>
+
+            <div className="aspect-video bg-gradient-to-tr from-slate-900 to-indigo-950 rounded-2xl flex flex-col items-center justify-center p-6 text-center text-white border border-slate-700">
+              <Sparkles className="w-12 h-12 text-indigo-400 mb-4 animate-bounce" />
+              <h4 className="text-lg font-bold mb-2">Interactive Walkthrough Experience</h4>
+              <p className="text-xs text-slate-300 max-w-md mb-6">
+                Explore the live Student Portal, Anti-Plagiarism Engine, and AI Assistant in the interactive sandbox below!
+              </p>
+              <button
+                onClick={() => {
+                  setShowDemoModal(false);
+                  document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="px-6 py-2.5 rounded-full bg-[#4338ca] hover:bg-[#3730a3] text-white text-xs font-bold shadow-md cursor-pointer"
+              >
+                Open Live Interactive Sandbox ↓
+              </button>
+            </div>
           </div>
         </div>
+      )}
 
-        {/* ========================================================= */}
-        {/* INTERACTIVE LIVE PRODUCT DEMO PREVIEW (HERO SHOWCASE) */}
-        {/* ========================================================= */}
-        <div className="max-w-5xl mx-auto rounded-3xl p-1.5 bg-gradient-to-b from-indigo-500/30 via-purple-500/20 to-slate-200/50 dark:to-slate-800/50 shadow-2xl backdrop-blur-xl">
-          <div className="bg-white/95 dark:bg-slate-900/95 rounded-[22px] border border-slate-200/80 dark:border-slate-800 overflow-hidden">
-            {/* Demo Header Bar with Tabs */}
-            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80">
+      {/* ========================================================= */}
+      {/* 2. CORE FEATURES HIGHLIGHTS (#features) */}
+      {/* ========================================================= */}
+      <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-[#4338ca] dark:text-indigo-400 text-xs font-bold border border-indigo-100 dark:border-indigo-800 mb-4">
+            <Zap className="w-3.5 h-3.5 text-amber-500" />
+            <span>Built for Modern Higher Education</span>
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-4">
+            Everything You Need to Succeed
+          </h2>
+          <p className="text-base text-slate-600 dark:text-slate-400">
+            Engineered from the ground up with university-grade tools, automated rubric grading, and real-time deadline monitoring.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Card 1 */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/80 flex items-center justify-center text-[#4338ca] dark:text-indigo-400 mb-5 group-hover:scale-110 transition-transform">
+              <Calendar className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2">Smart Deadline Calendar</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Consolidate all university course tasks into a unified chronological schedule with smart milestone alerts.
+            </p>
+          </div>
+
+          {/* Card 2 */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/80 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-5 group-hover:scale-110 transition-transform">
+              <SearchCheck className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2">Anti-Plagiarism Engine</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Instant cosine n-gram similarity detection comparing cohort and historical coursework with highlighted match diffs.
+            </p>
+          </div>
+
+          {/* Card 3 */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/80 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-5 group-hover:scale-110 transition-transform">
+              <Bot className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2">AI Academic Companion</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              24/7 AI-powered tutoring, report outline generation, conceptual breakdowns, and debugging tips.
+            </p>
+          </div>
+
+          {/* Card 4 */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/80 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-5 group-hover:scale-110 transition-transform">
+              <Award className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2">Auto-Rubric Grading</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Speed up grading workflows for professors with automated evaluation rubrics and instant feedback distribution.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 3. INTERACTIVE LIVE PRODUCT DEMO SANDBOX */}
+      {/* ========================================================= */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f3f0ff] dark:bg-indigo-950/60 text-[#4338ca] dark:text-indigo-400 text-xs font-bold mb-3 border border-indigo-100 dark:border-indigo-800">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>Interactive Live Product Preview</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
+            Experience the Workspace Sandbox
+          </h2>
+        </div>
+
+        <div className="rounded-3xl p-1.5 bg-gradient-to-b from-indigo-500/30 via-purple-500/20 to-slate-200/50 dark:to-slate-800/50 shadow-2xl backdrop-blur-xl">
+          <div className="bg-white dark:bg-slate-900 rounded-[22px] border border-slate-200/80 dark:border-slate-800 overflow-hidden">
+            {/* Header with Switcher Tabs */}
+            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-rose-500 inline-block" />
                 <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" />
@@ -221,7 +390,7 @@ const LandingPage = () => {
                   onClick={() => setActiveHeroTab('student')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                     activeHeroTab === 'student'
-                      ? 'bg-indigo-600 text-white shadow-xs'
+                      ? 'bg-[#4338ca] text-white shadow-xs'
                       : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
@@ -258,64 +427,36 @@ const LandingPage = () => {
             {/* Tab 1: Student View Preview */}
             {activeHeroTab === 'student' && (
               <div className="p-6 sm:p-8 space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-extrabold">
-                        CS-402
-                      </span>
-                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
-                        Distributed Systems & Raft Consensus Lab
-                      </h3>
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      Due: Tomorrow at 11:59 PM • Max Marks: 100 • Submission Type: PDF / Code Repo
-                    </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60">
+                    <div className="text-xs font-bold text-indigo-700 dark:text-indigo-400">Total Tasks</div>
+                    <div className="text-2xl font-black text-indigo-950 dark:text-white mt-1">12 Active</div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5" /> 23h 14m remaining
-                    </span>
+                  <div className="p-4 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/60">
+                    <div className="text-xs font-bold text-emerald-700 dark:text-emerald-400">Submitted</div>
+                    <div className="text-2xl font-black text-emerald-950 dark:text-white mt-1">10 Done</div>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-900/60">
+                    <div className="text-xs font-bold text-amber-700 dark:text-amber-400">Pending</div>
+                    <div className="text-2xl font-black text-amber-950 dark:text-white mt-1">2 Due Soon</div>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-purple-50/80 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/60">
+                    <div className="text-xs font-bold text-purple-700 dark:text-purple-400">Avg Grade</div>
+                    <div className="text-2xl font-black text-purple-950 dark:text-white mt-1">94.5% (A)</div>
                   </div>
                 </div>
 
-                {/* Submissions & Deliverables status card */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-500 mb-2">
-                      <span>Status</span>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <div className="space-y-3">
+                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-xs">CS</div>
+                      <div>
+                        <div className="font-bold text-sm text-slate-900 dark:text-white">Distributed Systems Lab 4</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">Due Tomorrow, 11:59 PM • Max 100 Pts</div>
+                      </div>
                     </div>
-                    <p className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">Ready to Submit</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Version 1.2 drafted</p>
+                    <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">Ready to Submit</span>
                   </div>
-                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-500 mb-2">
-                      <span>File Attached</span>
-                      <FileText className="w-4 h-4 text-indigo-500" />
-                    </div>
-                    <p className="text-base font-extrabold text-slate-900 dark:text-white truncate">raft_consensus_report.pdf</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">2.4 MB • Textual Verified</p>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-500 mb-2">
-                      <span>Target Grade</span>
-                      <Award className="w-4 h-4 text-purple-500" />
-                    </div>
-                    <p className="text-base font-extrabold text-purple-600 dark:text-purple-400">95 / 100 (A+)</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Automated Rubric Target</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <span className="text-xs text-slate-500 font-medium">Click explore to view real student portal</span>
-                  <Link
-                    to="/student/dashboard"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-colors"
-                  >
-                    <span>Open Student Portal</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
                 </div>
               </div>
             )}
@@ -323,156 +464,64 @@ const LandingPage = () => {
             {/* Tab 2: Teacher & Plagiarism Preview */}
             {activeHeroTab === 'teacher' && (
               <div className="p-6 sm:p-8 space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      <SearchCheck className="w-5 h-5 text-emerald-500" />
-                      Anti-Plagiarism & Textual Similarity Scanner
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      Drag slider to test live similarity threshold detection & highlight flags
-                    </p>
+                    <div className="text-sm font-bold text-slate-900 dark:text-white">N-Gram Similarity Scanner Test</div>
+                    <div className="text-xs text-slate-500">Live test against campus cohort database</div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-extrabold ${
-                      similarityScore > 50
-                        ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300'
-                        : similarityScore > 25
-                        ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300'
-                        : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300'
-                    }`}>
-                      {similarityScore}% Text Match
-                    </span>
+                  <div className="text-xl font-black text-emerald-600 dark:text-emerald-400">
+                    {similarityScore}% Match (Clean)
                   </div>
                 </div>
 
-                {/* Similarity interactive slider */}
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-3">
-                  <div className="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
-                    <span>Similarity Gauge Test:</span>
-                    <span>{similarityScore}% Match Detected</span>
-                  </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-400 mb-2 block">
+                    Simulate Similarity Match Percentage: {similarityScore}%
+                  </label>
                   <input
                     type="range"
                     min="0"
                     max="100"
                     value={similarityScore}
                     onChange={(e) => setSimilarityScore(Number(e.target.value))}
-                    className="w-full accent-emerald-600 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer"
+                    className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#4338ca]"
                   />
-                  <div className="flex justify-between text-[10px] font-bold text-slate-400">
-                    <span>0% (Original)</span>
-                    <span>25% (Acceptable Quotes)</span>
-                    <span>50% (High Overlap)</span>
-                    <span>100% (Flagged Duplicate)</span>
-                  </div>
-                </div>
-
-                {/* Live Mock Text Comparison */}
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono space-y-2">
-                  <div className="text-[11px] font-bold text-slate-400">SUBMISSION EXCERPT WITH SCANNER HIGHLIGHTS:</div>
-                  <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                    The Byzantine fault-tolerant algorithm coordinates consensus among replicated nodes{' '}
-                    <span className={similarityScore > 20 ? 'bg-amber-200 dark:bg-amber-900/60 px-1 py-0.5 rounded font-bold' : ''}>
-                      by executing two-phase commit rounds with cryptographic signatures.
-                    </span>{' '}
-                    Each replica maintains a deterministic state machine{' '}
-                    <span className={similarityScore > 50 ? 'bg-rose-200 dark:bg-rose-900/60 px-1 py-0.5 rounded font-bold text-rose-700 dark:text-rose-300' : ''}>
-                      and validates incoming block proposals before appending to the local ledger.
-                    </span>
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <span className="text-xs text-slate-500 font-medium">Automatic n-gram comparison against cohort database</span>
-                  <Link
-                    to="/teacher/dashboard"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors"
-                  >
-                    <span>Open Teacher Workspace</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
                 </div>
               </div>
             )}
 
-            {/* Tab 3: AI Assistant Preview */}
+            {/* Tab 3: AI Tutor Chat */}
             {activeHeroTab === 'ai' && (
               <div className="p-6 sm:p-8 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                      <Bot className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-900 dark:text-white">Gemini AI Study Tutor</h3>
-                      <p className="text-[11px] text-slate-400">Pedagogical assignment guidance & code debugging</p>
-                    </div>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 text-[11px] font-extrabold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> Online
-                  </span>
-                </div>
-
-                {/* Chat window */}
-                <div className="h-48 overflow-y-auto space-y-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 text-xs">
+                <div className="h-48 overflow-y-auto space-y-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
                   {aiChatMessages.map((msg, i) => (
                     <div
                       key={i}
-                      className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      className={`p-3 rounded-2xl text-xs font-medium leading-relaxed max-w-[85%] ${
+                        msg.role === 'user'
+                          ? 'ml-auto bg-[#4338ca] text-white'
+                          : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
+                      }`}
                     >
-                      {msg.role === 'assistant' && (
-                        <div className="w-6 h-6 rounded-lg bg-purple-600 text-white flex items-center justify-center shrink-0 text-[10px] font-bold">
-                          AI
-                        </div>
-                      )}
-                      <div
-                        className={`max-w-[80%] p-3 rounded-2xl whitespace-pre-line leading-relaxed ${
-                          msg.role === 'user'
-                            ? 'bg-indigo-600 text-white rounded-br-xs'
-                            : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-xs'
-                        }`}
-                      >
-                        {msg.text}
-                      </div>
+                      {msg.text}
                     </div>
                   ))}
                 </div>
 
-                {/* Prompt suggestion chips */}
-                <div className="flex flex-wrap gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => handleSendAiPrompt('Explain Dijkstra shortest path with Python pseudocode')}
-                    className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 border border-slate-200 dark:border-slate-700 cursor-pointer"
-                  >
-                    💡 Dijkstra Algorithm Explanation
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSendAiPrompt('Generate rubric self-evaluation checklist')}
-                    className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 border border-slate-200 dark:border-slate-700 cursor-pointer"
-                  >
-                    📋 Rubric Checklist
-                  </button>
-                </div>
-
-                {/* Input box */}
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2">
                   <input
                     type="text"
                     value={aiPromptInput}
                     onChange={(e) => setAiPromptInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSendAiPrompt()}
-                    placeholder="Ask AI tutor anything about your assignment..."
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Ask AI Tutor for assignment outline or concept debugging..."
+                    className="flex-1 px-4 py-2.5 rounded-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-hidden focus:border-[#4338ca]"
                   />
                   <button
-                    type="button"
                     onClick={() => handleSendAiPrompt()}
-                    className="p-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white cursor-pointer transition-colors"
+                    className="px-5 py-2.5 rounded-full bg-[#4338ca] hover:bg-[#3730a3] text-white text-xs font-bold shadow-xs cursor-pointer"
                   >
-                    <Send className="w-4 h-4" />
+                    Send
                   </button>
                 </div>
               </div>
@@ -482,562 +531,112 @@ const LandingPage = () => {
       </section>
 
       {/* ========================================================= */}
-      {/* 2. REAL-TIME CAMPUS VELOCITY TICKER & STATS */}
+      {/* 4. ABOUT / MULTI-ROLE PORTALS (#about) */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-lg">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-slate-200/80 dark:border-slate-800">
-            <div>
-              <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-extrabold uppercase tracking-wider mb-1">
-                <Flame className="w-4 h-4 text-amber-500" />
-                <span>Live Campus Velocity Feed</span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-                Institutional Activity in Real-Time
-              </h2>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Stream Synchronized</span>
-            </div>
+      <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f3f0ff] dark:bg-indigo-950/60 text-[#4338ca] dark:text-indigo-400 text-xs font-bold mb-4 border border-indigo-100 dark:border-indigo-800">
+            <Users className="w-3.5 h-3.5" />
+            <span>Dedicated Multi-Role Experience</span>
           </div>
-
-          {/* Activity Cards Stream */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-            {liveCampusActivity.map((item) => (
-              <div
-                key={item.id}
-                className="p-4 rounded-2xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all"
-              >
-                <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="text-base">{item.icon}</span>
-                  <span className="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-[10px] font-extrabold">
-                    {item.badge}
-                  </span>
-                </div>
-                <p className="text-xs font-bold text-slate-900 dark:text-white">{item.user}</p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
-                  {item.action}
-                </p>
-                <p className="text-[10px] text-slate-400 mt-2 font-medium">{item.time}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 3. INTERACTIVE ROLE PERSONA SHOWCASE */}
-      {/* ========================================================= */}
-      <section id="roles" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold mb-3">
-            <Layers className="w-3.5 h-3.5" />
-            <span>ROLE-SPECIFIC ARCHITECTURE</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Tailored Experiences for Every Stakeholder
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-4">
+            Tailored for Every Academic Role
           </h2>
-          <p className="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400">
-            Select a persona below to explore the dedicated tools built for your academic workflow.
+          <p className="text-base text-slate-600 dark:text-slate-400">
+            From seamless student submissions to fast faculty grading and university administrator oversight.
           </p>
         </div>
 
-        {/* Persona Pill Switcher */}
-        <div className="flex justify-center mb-8">
-          <div className="p-1.5 rounded-2xl glass-panel inline-flex gap-2">
-            <button
-              type="button"
-              onClick={() => setActiveRoleCard('student')}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer flex items-center gap-2 ${
-                activeRoleCard === 'student'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>Student Workspace</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveRoleCard('teacher')}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer flex items-center gap-2 ${
-                activeRoleCard === 'teacher'
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              <span>Teacher / Faculty</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveRoleCard('admin')}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer flex items-center gap-2 ${
-                activeRoleCard === 'admin'
-                  ? 'bg-rose-600 text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <ShieldCheck className="w-4 h-4" />
-              <span>Campus Admin</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Persona Spotlight Card */}
-        <div className="glass-card rounded-3xl p-8 sm:p-10 border border-slate-200/80 dark:border-slate-800 shadow-xl glow-card">
-          {activeRoleCard === 'student' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div className="space-y-5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-bold">
-                  <BookOpen className="w-3.5 h-3.5" /> Student Edition
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                  Conquer Deadlines with Intelligent Study Tools
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                  Never miss an assignment again. View automated timeline schedules, draft versioned deliverables, check real-time evaluation rubrics, and request 24/7 AI tutor guidance on tough concepts.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-500 shrink-0" />
-                    <span>Visual Calendar Milestones</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-500 shrink-0" />
-                    <span>PDF & Code File Uploads</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-500 shrink-0" />
-                    <span>Personalized GPA Analytics</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-500 shrink-0" />
-                    <span>Instant Teacher Feedback</span>
-                  </div>
-                </div>
-                <div className="pt-4">
-                  <Link
-                    to="/student/dashboard"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-indigo-500/20 transition-all"
-                  >
-                    <span>Launch Student Dashboard</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Visual Mockup Box */}
-              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-4">
-                <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-slate-500">Upcoming Coursework Pipeline</span>
-                  <span className="text-indigo-600 dark:text-indigo-400">4 Active</span>
-                </div>
-                <div className="space-y-2.5">
-                  <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">Operating Systems Virtual Memory</p>
-                      <p className="text-[10px] text-slate-400">Due: Tomorrow • 100 Pts</p>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-[10px] font-extrabold">
-                      Pending
-                    </span>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">Database Normalization Report</p>
-                      <p className="text-[10px] text-slate-400">Graded: Score 96/100</p>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold">
-                      Completed A+
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeRoleCard === 'teacher' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div className="space-y-5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
-                  <Users className="w-3.5 h-3.5" /> Faculty Hub
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                  Speed-Grading & Automated Plagiarism Defense
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                  Design complex multi-criteria rubrics in seconds. Review cohort submissions with side-by-side textual diffs, broadcast batch grades, and automatically detect dishonest duplicate deliverables.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span>N-Gram Similarity Scanner</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span>1-Click Assignment Publisher</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span>Side-by-Side Code Diff Compare</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span>Class Grade Distribution Curve</span>
-                  </div>
-                </div>
-                <div className="pt-4">
-                  <Link
-                    to="/teacher/dashboard"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-emerald-500/20 transition-all"
-                  >
-                    <span>Launch Teacher Workspace</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Visual Mockup Box */}
-              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-4">
-                <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-slate-500">Grading Queue Status</span>
-                  <span className="text-emerald-600 dark:text-emerald-400">42 / 45 Graded (93%)</span>
-                </div>
-                <div className="space-y-2.5">
-                  <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">Dr. Sarah Mitchell (Cloud Architecture)</p>
-                      <p className="text-[10px] text-slate-400">Plagiarism Check: 0% Match (Original)</p>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold">
-                      Verified
-                    </span>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">Batch Evaluation Auto-Publish</p>
-                      <p className="text-[10px] text-slate-400">Syncs grades directly to student notification feed</p>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-[10px] font-extrabold">
-                      Auto-Sync
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeRoleCard === 'admin' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div className="space-y-5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-bold">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Institutional Administration
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                  Campus-Wide Governance & Audit Intelligence
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                  Manage hundreds of courses, department enrollments, and academic credentials from one authoritative central dashboard. Inspect system health, compliance records, and aggregate performance metrics.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-rose-500 shrink-0" />
-                    <span>Campus User Lifecycle Control</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-rose-500 shrink-0" />
-                    <span>Department Course Management</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-rose-500 shrink-0" />
-                    <span>Cross-Cohort Analytics Reports</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-rose-500 shrink-0" />
-                    <span>Audit & Compliance Security Logs</span>
-                  </div>
-                </div>
-                <div className="pt-4">
-                  <Link
-                    to="/admin/dashboard"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-rose-500/20 transition-all"
-                  >
-                    <span>Launch Admin Console</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Visual Mockup Box */}
-              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-4">
-                <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-slate-500">Institution Metrics</span>
-                  <span className="text-rose-600 dark:text-rose-400">All Systems Operational</span>
-                </div>
-                <div className="space-y-2.5">
-                  <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">Active Academic Departments</p>
-                      <p className="text-[10px] text-slate-400">Computer Science, IT, Electronics, Mechanical</p>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-[10px] font-extrabold">
-                      8 Depts
-                    </span>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">System Security Status</p>
-                      <p className="text-[10px] text-slate-400">JWT Token Security & Clerk SSO Enabled</p>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold">
-                      Encrypted
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 4. INTERACTIVE GPA & GRADE RUBRIC SIMULATOR */}
-      {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="glass-panel rounded-3xl p-8 sm:p-12 border border-slate-200/80 dark:border-slate-800 shadow-xl relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Student Persona */}
+          <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md hover:border-indigo-500 transition-all flex flex-col justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 text-xs font-extrabold mb-3">
-                <Sliders className="w-3.5 h-3.5" />
-                <span>INTERACTIVE RUBRIC CALCULATOR</span>
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center text-[#4338ca] dark:text-indigo-400 mb-6">
+                <GraduationCap className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
-                Simulate Your Course Grade & Rubric Outcomes
-              </h2>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
-                Adjust the interactive sliders to observe how individual coursework weights, lab assignments, and milestone deliverables impact your final semester GPA prediction.
+              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">Student Workspace</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                Submit coursework, view upcoming deadline reminders, calculate live course GPA, and ask the AI Tutor for guidance.
               </p>
-
-              {/* Interactive Sliders */}
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    <span>Assignments & Homework Score</span>
-                    <span className="text-indigo-600 dark:text-indigo-400">{homeworkWeight}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={homeworkWeight}
-                    onChange={(e) => setHomeworkWeight(Number(e.target.value))}
-                    className="w-full accent-indigo-600 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    <span>Quizzes & Knowledge Checks</span>
-                    <span className="text-purple-600 dark:text-purple-400">{quizScore}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={quizScore}
-                    onChange={(e) => setQuizScore(Number(e.target.value))}
-                    className="w-full accent-purple-600 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    <span>Laboratory / Practical Deliverables</span>
-                    <span className="text-emerald-600 dark:text-emerald-400">{labScore}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={labScore}
-                    onChange={(e) => setLabScore(Number(e.target.value))}
-                    className="w-full accent-emerald-600 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    <span>Capstone / Final Term Project</span>
-                    <span className="text-cyan-600 dark:text-cyan-400">{projectScore}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={projectScore}
-                    onChange={(e) => setProjectScore(Number(e.target.value))}
-                    className="w-full accent-cyan-600 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer"
-                  />
-                </div>
-              </div>
             </div>
+            <Link
+              to="/register"
+              className="inline-flex items-center gap-2 text-xs font-bold text-[#4338ca] dark:text-indigo-400 hover:gap-3 transition-all"
+            >
+              <span>Join as Student</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
 
-            {/* Calculated Result Display Card */}
-            <div className="p-8 rounded-3xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-xl text-center space-y-6">
-              <div className="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                <Award className="w-8 h-8" />
+          {/* Faculty Persona */}
+          <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md hover:border-emerald-500 transition-all flex flex-col justify-between">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6">
+                <Users className="w-6 h-6" />
               </div>
-
-              <div>
-                <p className="text-xs font-extrabold uppercase tracking-widest text-slate-400">Predicted Academic Grade</p>
-                <h3 className={`text-5xl sm:text-6xl font-black mt-2 ${gradeInfo.color}`}>
-                  {computedGrade}%
-                </h3>
-                <p className="text-lg font-bold text-slate-800 dark:text-slate-200 mt-1">
-                  Grade: {gradeInfo.grade}
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  {gradeInfo.text}
-                </p>
-              </div>
-
-              {/* Mini Trend Area Chart */}
-              <div className="h-32 w-full pt-2">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={mockPerformanceData}>
-                    <defs>
-                      <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
-                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0} />
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="week" stroke="#94a3b8" fontSize={10} tickLine={false} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#1e293b',
-                        border: 'none',
-                        borderRadius: '8px',
-                        color: '#fff',
-                        fontSize: '11px',
-                      }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="avgScore"
-                      stroke="#6366f1"
-                      strokeWidth={2.5}
-                      fillOpacity={1}
-                      fill="url(#scoreGrad)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-
-              <Link
-                to="/register"
-                className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md transition-all"
-              >
-                <span>Track Your Actual Course Grades</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">Faculty & Professor Hub</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                Create assignments, configure scoring rubrics, review automated plagiarism check results, and publish grades instantly.
+              </p>
             </div>
+            <Link
+              to="/register"
+              className="inline-flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:gap-3 transition-all"
+            >
+              <span>Join as Faculty</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Admin Persona */}
+          <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md hover:border-rose-500 transition-all flex flex-col justify-between">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950 flex items-center justify-center text-rose-600 dark:text-rose-400 mb-6">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">Campus Administration</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                Manage university departments, faculty assignments, system audits, and monitor overall campus performance metrics.
+              </p>
+            </div>
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 text-xs font-bold text-rose-600 dark:text-rose-400 hover:gap-3 transition-all"
+            >
+              <span>Admin Access</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>
 
       {/* ========================================================= */}
-      {/* 5. 4-STEP ACADEMIC WORKFLOW PIPELINE */}
-      {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold mb-3">
-            <Zap className="w-3.5 h-3.5 text-amber-500" />
-            <span>SEAMLESS WORKFLOW</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            From Syllabus to Final Evaluation in 4 Steps
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="glass-card p-6 rounded-3xl glow-card border border-slate-200/80 dark:border-slate-800 relative">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-sm mb-4">
-              01
-            </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">Assignment Creation</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Faculty publish assignments with attachments, deadlines, and multi-tier rubric criteria.
-            </p>
-          </div>
-
-          <div className="glass-card p-6 rounded-3xl glow-card border border-slate-200/80 dark:border-slate-800 relative">
-            <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-sm mb-4">
-              02
-            </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">Student Deliverable Upload</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Students upload versioned PDFs or code files with real-time submission confirmations.
-            </p>
-          </div>
-
-          <div className="glass-card p-6 rounded-3xl glow-card border border-slate-200/80 dark:border-slate-800 relative">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black text-sm mb-4">
-              03
-            </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">Similarity & AI Scan</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Automated anti-plagiarism comparison scans cohort files and generates detailed overlap reports.
-            </p>
-          </div>
-
-          <div className="glass-card p-6 rounded-3xl glow-card border border-slate-200/80 dark:border-slate-800 relative">
-            <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 flex items-center justify-center font-black text-sm mb-4">
-              04
-            </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">Feedback & Analytics</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Instant feedback delivery, score publishing, and campus-wide cohort analytics synchronization.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 6. INTERACTIVE FAQ ACCORDION */}
+      {/* 5. FREQUENTLY ASKED QUESTIONS (FAQ) */}
       {/* ========================================================= */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold mb-3">
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>FREQUENTLY ASKED QUESTIONS</span>
-          </div>
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-3">
             Frequently Asked Questions
           </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400">Everything you need to know about AssignTrack.</p>
         </div>
 
-        <div className="space-y-3">
-          {faqs.map((faq, index) => (
+        <div className="space-y-4">
+          {faqs.map((faq, idx) => (
             <div
-              key={index}
-              className="glass-card rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden"
+              key={idx}
+              className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 overflow-hidden"
             >
               <button
                 type="button"
-                onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
-                className="w-full flex items-center justify-between p-5 text-left font-bold text-sm text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                onClick={() => setOpenFaq(openFaq === idx ? -1 : idx)}
+                className="w-full p-5 text-left font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center justify-between cursor-pointer"
               >
                 <span>{faq.q}</span>
-                {openFaq === index ? (
-                  <Minus className="w-4 h-4 text-indigo-600 shrink-0" />
-                ) : (
-                  <Plus className="w-4 h-4 text-slate-400 shrink-0" />
-                )}
+                {openFaq === idx ? <Minus className="w-4 h-4 text-[#4338ca]" /> : <Plus className="w-4 h-4 text-slate-400" />}
               </button>
-              {openFaq === index && (
-                <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-3">
+              {openFaq === idx && (
+                <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed border-t border-slate-100 dark:border-slate-800 pt-3">
                   {faq.a}
                 </div>
               )}
@@ -1047,46 +646,35 @@ const LandingPage = () => {
       </section>
 
       {/* ========================================================= */}
-      {/* 7. HIGH-IMPACT FINAL CALL-TO-ACTION BANNER */}
+      {/* 6. CALL TO ACTION BANNER (#contact) */}
       {/* ========================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl p-8 sm:p-14 bg-gradient-to-r from-indigo-900 via-indigo-950 to-purple-950 text-white overflow-hidden shadow-2xl border border-indigo-700/50 text-center">
-          {/* Ambient light elements */}
-          <div className="absolute top-0 right-0 w-[400px] h-[300px] bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[300px] bg-purple-500/20 blur-[100px] rounded-full pointer-events-none" />
-
-          <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-indigo-300 text-xs font-extrabold">
-              <GraduationCap className="w-4 h-4" />
-              <span>Transform Your Campus Assignment Experience</span>
-            </div>
-
+      <section id="contact" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="rounded-3xl p-8 sm:p-14 bg-gradient-to-r from-[#1e1b4b] via-[#312e81] to-[#4338ca] text-white text-center relative overflow-hidden shadow-2xl">
+          <div className="relative z-10 max-w-2xl mx-auto space-y-6">
             <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
               Ready to Upgrade Your Academic Workflow?
             </h2>
-
-            <p className="text-sm sm:text-base text-indigo-200 max-w-xl mx-auto leading-relaxed">
-              Join thousands of students and faculty streamlining deadlines, rubrics, and plagiarism checks with Smart Assignment Tracker.
+            <p className="text-sm sm:text-base text-indigo-100 leading-relaxed">
+              Join over 1,000+ students and faculty members. Never miss another deadline and elevate your academic performance today.
             </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
               <Link
                 to="/register"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-slate-100 text-indigo-900 text-base font-extrabold rounded-2xl shadow-xl shadow-black/20 hover:scale-[1.02] transition-all cursor-pointer"
+                className="px-8 py-4 bg-white text-[#4338ca] hover:bg-slate-100 text-sm sm:text-base font-bold rounded-full shadow-lg hover:scale-105 transition-all cursor-pointer"
               >
-                <span>Create Free Academic Account</span>
-                <ArrowRight className="w-5 h-5" />
+                Get Started Free
               </Link>
               <Link
                 to="/login"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/15 text-white text-base font-bold rounded-2xl border border-white/20 backdrop-blur-md transition-all cursor-pointer"
+                className="px-8 py-4 bg-indigo-950/60 hover:bg-indigo-950 text-white text-sm sm:text-base font-bold rounded-full border border-indigo-400/40 hover:scale-105 transition-all cursor-pointer"
               >
-                Sign In to Existing Account
+                Sign In to Portal
               </Link>
             </div>
           </div>
         </div>
       </section>
+
     </div>
   );
 };
