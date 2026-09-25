@@ -27,7 +27,10 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <ScrollView contentContainerStyle={[styles.scrollContent, { padding: padding }]}>
+      <ScrollView
+        contentContainerStyle={[styles.scrollContent, { padding: padding, paddingBottom: 48 }]}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={containerStyle}>
           {/* Profile Card */}
           <View style={[styles.profileCard, { padding: isTablet ? 32 : 24 }]}>

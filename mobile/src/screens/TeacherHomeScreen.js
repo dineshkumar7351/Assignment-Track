@@ -120,7 +120,8 @@ export default function TeacherHomeScreen({ navigation }) {
                     {
                       backgroundColor: '#ecfdf5',
                       borderColor: '#a7f3d0',
-                      minWidth: isTablet ? '23%' : '47%',
+                      minWidth: isTablet ? '22%' : isSmallDevice ? '100%' : '46%',
+                      flex: 1,
                     },
                   ]}
                 >
@@ -137,7 +138,8 @@ export default function TeacherHomeScreen({ navigation }) {
                     {
                       backgroundColor: '#eef2ff',
                       borderColor: '#c7d2fe',
-                      minWidth: isTablet ? '23%' : '47%',
+                      minWidth: isTablet ? '22%' : isSmallDevice ? '100%' : '46%',
+                      flex: 1,
                     },
                   ]}
                 >
@@ -154,7 +156,8 @@ export default function TeacherHomeScreen({ navigation }) {
                     {
                       backgroundColor: '#fffbeb',
                       borderColor: '#fde68a',
-                      minWidth: isTablet ? '23%' : '47%',
+                      minWidth: isTablet ? '22%' : isSmallDevice ? '100%' : '46%',
+                      flex: 1,
                     },
                   ]}
                 >
@@ -171,7 +174,8 @@ export default function TeacherHomeScreen({ navigation }) {
                     {
                       backgroundColor: '#fdf2f8',
                       borderColor: '#fbcfe8',
-                      minWidth: isTablet ? '23%' : '47%',
+                      minWidth: isTablet ? '22%' : isSmallDevice ? '100%' : '46%',
+                      flex: 1,
                     },
                   ]}
                 >
@@ -227,6 +231,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingVertical: 16,
+    paddingBottom: 40,
   },
   innerContainer: {
     width: '100%',

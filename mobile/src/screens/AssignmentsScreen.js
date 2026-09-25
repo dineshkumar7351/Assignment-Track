@@ -91,7 +91,8 @@ export default function AssignmentsScreen({ navigation }) {
             data={assignments}
             keyExtractor={(item, index) => item._id || String(index)}
             renderItem={renderItem}
-            contentContainerStyle={[styles.listContent, { padding: padding }]}
+            contentContainerStyle={[styles.listContent, { padding: padding, paddingBottom: 48 }]}
+            showsVerticalScrollIndicator={false}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
