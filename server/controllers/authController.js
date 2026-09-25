@@ -404,7 +404,7 @@ const syncClerkUser = async (req, res, next) => {
       });
     }
 
-    const token = generateToken(user._id);
+    const token = generateToken(user._id, user.role);
 
     return res.status(200).json({
       success: true,

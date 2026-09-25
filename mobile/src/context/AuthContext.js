@@ -31,11 +31,16 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/login', { email, password });
       if (response.data && response.data.success) {
-        const { token, user: userData } = response.data.data;
-        await AsyncStorage.setItem('auth_token', token);
-        await AsyncStorage.setItem('auth_user', JSON.stringify(userData));
-        setUser(userData);
-        return { success: true, user: userData };
+        const token = response.data.token || response.data.data?.token;
+        const userData = response.data.user || response.data.data?.user;
+        if (token) {
+          await AsyncStorage.setItem('auth_token', token);
+        }
+        if (userData) {
+          await AsyncStorage.setItem('auth_user', JSON.stringify(userData));
+          setUser(userData);
+        }
+        return { success: true, user: userData, token };
       }
       return { success: false, message: response.data?.message || 'Login failed' };
     } catch (err) {
@@ -50,11 +55,16 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/register', userData);
       if (response.data && response.data.success) {
-        const { token, user: registeredUser } = response.data.data;
-        await AsyncStorage.setItem('auth_token', token);
-        await AsyncStorage.setItem('auth_user', JSON.stringify(registeredUser));
-        setUser(registeredUser);
-        return { success: true, user: registeredUser };
+        const token = response.data.token || response.data.data?.token;
+        const registeredUser = response.data.user || response.data.data?.user;
+        if (token) {
+          await AsyncStorage.setItem('auth_token', token);
+        }
+        if (registeredUser) {
+          await AsyncStorage.setItem('auth_user', JSON.stringify(registeredUser));
+          setUser(registeredUser);
+        }
+        return { success: true, user: registeredUser, token };
       }
       return { success: false, message: response.data?.message || 'Registration failed' };
     } catch (err) {
