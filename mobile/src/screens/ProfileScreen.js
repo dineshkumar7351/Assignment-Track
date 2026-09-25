@@ -17,68 +17,78 @@ import {
   Sparkles,
 } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
+import { useResponsive } from '../utils/responsive';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
+  const { isTablet, padding, containerStyle, ms } = useResponsive();
+
+  const avatarSize = isTablet ? 84 : 68;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Profile Card */}
-        <View style={styles.profileCard}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{user?.fullName?.charAt(0) || 'U'}</Text>
-          </View>
-          <Text style={styles.userName}>{user?.fullName}</Text>
-          <Text style={styles.userRoleBadge}>{user?.role?.toUpperCase()} ACCOUNT</Text>
-        </View>
-
-        {/* Details Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Academic Details</Text>
-
-          <View style={styles.row}>
-            <Mail size={18} color="#64748b" />
-            <View style={styles.rowContent}>
-              <Text style={styles.label}>Email Address</Text>
-              <Text style={styles.val}>{user?.email}</Text>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <ScrollView contentContainerStyle={[styles.scrollContent, { padding: padding }]}>
+        <View style={containerStyle}>
+          {/* Profile Card */}
+          <View style={[styles.profileCard, { padding: isTablet ? 32 : 24 }]}>
+            <View style={[styles.avatar, { width: avatarSize, height: avatarSize, borderRadius: avatarSize / 3 }]}>
+              <Text style={[styles.avatarText, { fontSize: ms(28) }]}>{user?.fullName?.charAt(0) || 'U'}</Text>
             </View>
+            <Text style={[styles.userName, { fontSize: ms(18) }]}>{user?.fullName}</Text>
+            <Text style={[styles.userRoleBadge, { fontSize: ms(10) }]}>{user?.role?.toUpperCase()} ACCOUNT</Text>
           </View>
 
-          <View style={styles.row}>
-            <Building2 size={18} color="#64748b" />
-            <View style={styles.rowContent}>
-              <Text style={styles.label}>Department</Text>
-              <Text style={styles.val}>{user?.department || 'Academic Department'}</Text>
-            </View>
-          </View>
+          {/* Details Card */}
+          <View style={[styles.card, { padding: isTablet ? 24 : 18 }]}>
+            <Text style={[styles.cardTitle, { fontSize: ms(14) }]}>Academic Details</Text>
 
-          {user?.studentId ? (
             <View style={styles.row}>
-              <BadgeCheck size={18} color="#64748b" />
+              <Mail size={ms(18)} color="#64748b" />
               <View style={styles.rowContent}>
-                <Text style={styles.label}>Student ID</Text>
-                <Text style={styles.val}>{user?.studentId}</Text>
+                <Text style={[styles.label, { fontSize: ms(11) }]}>Email Address</Text>
+                <Text style={[styles.val, { fontSize: ms(13) }]}>{user?.email}</Text>
               </View>
             </View>
-          ) : null}
 
-          {user?.employeeId ? (
             <View style={styles.row}>
-              <BadgeCheck size={18} color="#64748b" />
+              <Building2 size={ms(18)} color="#64748b" />
               <View style={styles.rowContent}>
-                <Text style={styles.label}>Faculty ID</Text>
-                <Text style={styles.val}>{user?.employeeId}</Text>
+                <Text style={[styles.label, { fontSize: ms(11) }]}>Department</Text>
+                <Text style={[styles.val, { fontSize: ms(13) }]}>{user?.department || 'Academic Department'}</Text>
               </View>
             </View>
-          ) : null}
-        </View>
 
-        {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutBtn} onPress={logout} activeOpacity={0.8}>
-          <LogOut size={18} color="#ffffff" />
-          <Text style={styles.logoutText}>Sign Out from Account</Text>
-        </TouchableOpacity>
+            {user?.studentId ? (
+              <View style={styles.row}>
+                <BadgeCheck size={ms(18)} color="#64748b" />
+                <View style={styles.rowContent}>
+                  <Text style={[styles.label, { fontSize: ms(11) }]}>Student ID</Text>
+                  <Text style={[styles.val, { fontSize: ms(13) }]}>{user?.studentId}</Text>
+                </View>
+              </View>
+            ) : null}
+
+            {user?.employeeId ? (
+              <View style={styles.row}>
+                <BadgeCheck size={ms(18)} color="#64748b" />
+                <View style={styles.rowContent}>
+                  <Text style={[styles.label, { fontSize: ms(11) }]}>Faculty ID</Text>
+                  <Text style={[styles.val, { fontSize: ms(13) }]}>{user?.employeeId}</Text>
+                </View>
+              </View>
+            ) : null}
+          </View>
+
+          {/* Logout Button */}
+          <TouchableOpacity
+            style={[styles.logoutBtn, { height: isTablet ? 54 : 48 }]}
+            onPress={logout}
+            activeOpacity={0.8}
+          >
+            <LogOut size={ms(18)} color="#ffffff" />
+            <Text style={[styles.logoutText, { fontSize: ms(14) }]}>Sign Out from Account</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

@@ -11,8 +11,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BookOpen, Clock, Calendar, CheckCircle2, ChevronRight } from 'lucide-react-native';
 import api from '../config/api';
+import { useResponsive } from '../utils/responsive';
 
 export default function AssignmentsScreen({ navigation }) {
+  const { isTablet, padding, containerStyle, ms } = useResponsive();
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -42,39 +44,41 @@ export default function AssignmentsScreen({ navigation }) {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
+    <View style={[styles.card, { padding: isTablet ? 20 : 16 }]}>
       <View style={styles.cardHeader}>
         <View style={styles.subjectBadge}>
-          <Text style={styles.subjectText}>{item.subject?.name || item.course || 'Course'}</Text>
+          <Text style={[styles.subjectText, { fontSize: ms(11) }]}>{item.subject?.name || item.course || 'Course'}</Text>
         </View>
         <View style={styles.dateBadge}>
-          <Clock size={12} color="#64748b" />
-          <Text style={styles.dateText}>
+          <Clock size={ms(12)} color="#64748b" />
+          <Text style={[styles.dateText, { fontSize: ms(11) }]}>
             {new Date(item.dueDate).toLocaleDateString()}
           </Text>
         </View>
       </View>
 
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.description} numberOfLines={2}>
+      <Text style={[styles.title, { fontSize: ms(15) }]}>{item.title}</Text>
+      <Text style={[styles.description, { fontSize: ms(13) }]} numberOfLines={2}>
         {item.description}
       </Text>
 
       <View style={styles.cardFooter}>
         <View style={styles.pointsBadge}>
-          <Text style={styles.pointsText}>{item.maxPoints || 100} Points</Text>
+          <Text style={[styles.pointsText, { fontSize: ms(11) }]}>{item.maxPoints || 100} Points</Text>
         </View>
         <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>{item.status || 'Active'}</Text>
+          <Text style={[styles.statusText, { fontSize: ms(11) }]}>{item.status || 'Active'}</Text>
         </View>
       </View>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Coursework & Tasks</Text>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <View style={[styles.header, { paddingHorizontal: padding }]}>
+        <View style={containerStyle}>
+          <Text style={[styles.headerTitle, { fontSize: ms(18) }]}>Coursework & Tasks</Text>
+        </View>
       </View>
 
       {loading ? (
@@ -82,19 +86,21 @@ export default function AssignmentsScreen({ navigation }) {
           <ActivityIndicator size="large" color="#4f46e5" />
         </View>
       ) : (
-        <FlatList
-          data={assignments}
-          keyExtractor={(item, index) => item._id || String(index)}
-          renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <BookOpen size={40} color="#94a3b8" />
-              <Text style={styles.emptyTitle}>No assignments available</Text>
-            </View>
-          }
-        />
+        <View style={[{ flex: 1 }, containerStyle]}>
+          <FlatList
+            data={assignments}
+            keyExtractor={(item, index) => item._id || String(index)}
+            renderItem={renderItem}
+            contentContainerStyle={[styles.listContent, { padding: padding }]}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <BookOpen size={ms(40)} color="#94a3b8" />
+                <Text style={[styles.emptyTitle, { fontSize: ms(14) }]}>No assignments available</Text>
+              </View>
+            }
+          />
+        </View>
       )}
     </SafeAreaView>
   );

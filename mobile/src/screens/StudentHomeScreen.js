@@ -21,10 +21,13 @@ import {
   LogOut,
 } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
+import { useResponsive } from '../utils/responsive';
 import api from '../config/api';
 
 export default function StudentHomeScreen({ navigation }) {
   const { user, logout } = useAuth();
+  const { isTablet, isSmallDevice, containerStyle, moderateScale, screenPadding } = useResponsive();
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -63,99 +66,167 @@ export default function StudentHomeScreen({ navigation }) {
   const upcomingDeadlines = data?.upcomingDeadlines || [];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingHorizontal: screenPadding },
+        ]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         showsVerticalScrollIndicator={false}
       >
-        {/* User Welcome Card */}
-        <View style={styles.welcomeCard}>
-          <View style={styles.welcomeRow}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{user?.fullName?.charAt(0) || 'S'}</Text>
+        <View style={[styles.innerContainer, containerStyle]}>
+          {/* User Welcome Card */}
+          <View style={styles.welcomeCard}>
+            <View style={styles.welcomeRow}>
+              <View
+                style={[
+                  styles.avatar,
+                  {
+                    width: moderateScale(44),
+                    height: moderateScale(44),
+                    borderRadius: moderateScale(14),
+                  },
+                ]}
+              >
+                <Text style={[styles.avatarText, { fontSize: moderateScale(18) }]}>
+                  {user?.fullName?.charAt(0) || 'S'}
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.welcomeTitle, { fontSize: moderateScale(16) }]}>
+                  Welcome back, {user?.fullName?.split(' ')[0]}!
+                </Text>
+                <Text style={[styles.welcomeSub, { fontSize: moderateScale(12) }]}>
+                  {user?.department || 'Student Workspace'}
+                </Text>
+              </View>
+              <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
+                <LogOut size={18} color="#ef4444" />
+              </TouchableOpacity>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.welcomeTitle}>Welcome back, {user?.fullName?.split(' ')[0]}!</Text>
-              <Text style={styles.welcomeSub}>{user?.department || 'Student Workspace'}</Text>
-            </View>
-            <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
-              <LogOut size={18} color="#ef4444" />
-            </TouchableOpacity>
           </View>
-        </View>
 
-        {loading ? (
-          <View style={styles.centerLoading}>
-            <ActivityIndicator size="large" color="#4f46e5" />
-            <Text style={styles.loadingText}>Loading your coursework stats...</Text>
-          </View>
-        ) : (
-          <>
-            {/* KPI Metric Grid */}
-            <View style={styles.metricGrid}>
-              <View style={[styles.metricCard, { backgroundColor: '#eef2ff', borderColor: '#c7d2fe' }]}>
-                <BookOpen size={20} color="#4f46e5" />
-                <Text style={styles.metricNum}>{metrics.totalAssignments}</Text>
-                <Text style={styles.metricLabel}>Total Tasks</Text>
-              </View>
-
-              <View style={[styles.metricCard, { backgroundColor: '#ecfdf5', borderColor: '#a7f3d0' }]}>
-                <CheckCircle2 size={20} color="#059669" />
-                <Text style={[styles.metricNum, { color: '#059669' }]}>{metrics.submittedCount}</Text>
-                <Text style={styles.metricLabel}>Submitted</Text>
-              </View>
-
-              <View style={[styles.metricCard, { backgroundColor: '#fffbeb', borderColor: '#fde68a' }]}>
-                <Clock size={20} color="#d97706" />
-                <Text style={[styles.metricNum, { color: '#d97706' }]}>{metrics.pendingCount}</Text>
-                <Text style={styles.metricLabel}>Pending</Text>
-              </View>
-
-              <View style={[styles.metricCard, { backgroundColor: '#fdf4ff', borderColor: '#f5d0fe' }]}>
-                <Percent size={20} color="#9333ea" />
-                <Text style={[styles.metricNum, { color: '#9333ea' }]}>{metrics.completionPercentage}%</Text>
-                <Text style={styles.metricLabel}>Completion</Text>
-              </View>
+          {loading ? (
+            <View style={styles.centerLoading}>
+              <ActivityIndicator size="large" color="#4f46e5" />
+              <Text style={styles.loadingText}>Loading your coursework stats...</Text>
             </View>
-
-            {/* Upcoming Deadlines Section */}
-            <View style={styles.sectionCard}>
-              <View style={styles.sectionHeader}>
-                <View style={styles.sectionTitleRow}>
-                  <Calendar size={18} color="#4f46e5" />
-                  <Text style={styles.sectionTitle}>Upcoming Deadlines</Text>
+          ) : (
+            <>
+              {/* KPI Metric Grid */}
+              <View style={styles.metricGrid}>
+                <View
+                  style={[
+                    styles.metricCard,
+                    {
+                      backgroundColor: '#eef2ff',
+                      borderColor: '#c7d2fe',
+                      minWidth: isTablet ? '23%' : '47%',
+                    },
+                  ]}
+                >
+                  <BookOpen size={20} color="#4f46e5" />
+                  <Text style={[styles.metricNum, { fontSize: moderateScale(22) }]}>
+                    {metrics.totalAssignments}
+                  </Text>
+                  <Text style={styles.metricLabel}>Total Tasks</Text>
                 </View>
-                <TouchableOpacity onPress={() => navigation.navigate('Assignments')}>
-                  <Text style={styles.seeAllText}>View All</Text>
-                </TouchableOpacity>
+
+                <View
+                  style={[
+                    styles.metricCard,
+                    {
+                      backgroundColor: '#ecfdf5',
+                      borderColor: '#a7f3d0',
+                      minWidth: isTablet ? '23%' : '47%',
+                    },
+                  ]}
+                >
+                  <CheckCircle2 size={20} color="#059669" />
+                  <Text style={[styles.metricNum, { color: '#059669', fontSize: moderateScale(22) }]}>
+                    {metrics.submittedCount}
+                  </Text>
+                  <Text style={styles.metricLabel}>Submitted</Text>
+                </View>
+
+                <View
+                  style={[
+                    styles.metricCard,
+                    {
+                      backgroundColor: '#fffbeb',
+                      borderColor: '#fde68a',
+                      minWidth: isTablet ? '23%' : '47%',
+                    },
+                  ]}
+                >
+                  <Clock size={20} color="#d97706" />
+                  <Text style={[styles.metricNum, { color: '#d97706', fontSize: moderateScale(22) }]}>
+                    {metrics.pendingCount}
+                  </Text>
+                  <Text style={styles.metricLabel}>Pending</Text>
+                </View>
+
+                <View
+                  style={[
+                    styles.metricCard,
+                    {
+                      backgroundColor: '#fdf4ff',
+                      borderColor: '#f5d0fe',
+                      minWidth: isTablet ? '23%' : '47%',
+                    },
+                  ]}
+                >
+                  <Percent size={20} color="#9333ea" />
+                  <Text style={[styles.metricNum, { color: '#9333ea', fontSize: moderateScale(22) }]}>
+                    {metrics.completionPercentage}%
+                  </Text>
+                  <Text style={styles.metricLabel}>Completion</Text>
+                </View>
               </View>
 
-              {upcomingDeadlines.length === 0 ? (
-                <View style={styles.emptyState}>
-                  <Sparkles size={32} color="#94a3b8" />
-                  <Text style={styles.emptyTitle}>No Pending Deadlines</Text>
-                  <Text style={styles.emptySubtitle}>You are all caught up on your assignments!</Text>
-                </View>
-              ) : (
-                upcomingDeadlines.map((item, idx) => (
-                  <View key={item._id || idx} style={styles.deadlineItem}>
-                    <View style={styles.deadlineLeft}>
-                      <Text style={styles.deadlineTitle}>{item.title}</Text>
-                      <Text style={styles.deadlineSubject}>{item.subject?.name || item.course || 'Course'}</Text>
-                    </View>
-                    <View style={styles.deadlineBadge}>
-                      <Clock size={12} color="#4f46e5" />
-                      <Text style={styles.deadlineDue}>
-                        {new Date(item.dueDate).toLocaleDateString()}
-                      </Text>
-                    </View>
+              {/* Upcoming Deadlines Section */}
+              <View style={styles.sectionCard}>
+                <View style={styles.sectionHeader}>
+                  <View style={styles.sectionTitleRow}>
+                    <Calendar size={18} color="#4f46e5" />
+                    <Text style={[styles.sectionTitle, { fontSize: moderateScale(15) }]}>
+                      Upcoming Deadlines
+                    </Text>
                   </View>
-                ))
-              )}
-            </View>
-          </>
-        )}
+                  <TouchableOpacity onPress={() => navigation.navigate('Assignments')}>
+                    <Text style={styles.seeAllText}>View All</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {upcomingDeadlines.length === 0 ? (
+                  <View style={styles.emptyState}>
+                    <Sparkles size={32} color="#94a3b8" />
+                    <Text style={styles.emptyTitle}>No Pending Deadlines</Text>
+                    <Text style={styles.emptySubtitle}>You are all caught up on your assignments!</Text>
+                  </View>
+                ) : (
+                  upcomingDeadlines.map((item, idx) => (
+                    <View key={item._id || idx} style={styles.deadlineItem}>
+                      <View style={styles.deadlineLeft}>
+                        <Text style={[styles.deadlineTitle, { fontSize: moderateScale(14) }]}>
+                          {item.title}
+                        </Text>
+                        <Text style={styles.deadlineSubject}>{item.subject?.name || item.course || 'Course'}</Text>
+                      </View>
+                      <View style={styles.deadlineBadge}>
+                        <Clock size={12} color="#4f46e5" />
+                        <Text style={styles.deadlineDue}>
+                          {new Date(item.dueDate).toLocaleDateString()}
+                        </Text>
+                      </View>
+                    </View>
+                  ))
+                )}
+              </View>
+            </>
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -167,7 +238,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   scrollContent: {
-    padding: 16,
+    paddingVertical: 16,
+  },
+  innerContainer: {
+    width: '100%',
   },
   welcomeCard: {
     backgroundColor: '#ffffff',
@@ -188,25 +262,19 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
     backgroundColor: '#4f46e5',
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
     color: '#ffffff',
-    fontSize: 18,
     fontWeight: '800',
   },
   welcomeTitle: {
-    fontSize: 16,
     fontWeight: '800',
     color: '#0f172a',
   },
   welcomeSub: {
-    fontSize: 12,
     color: '#64748b',
     marginTop: 1,
   },
@@ -233,13 +301,11 @@ const styles = StyleSheet.create({
   },
   metricCard: {
     flex: 1,
-    minWidth: '45%',
     borderRadius: 18,
     padding: 14,
     borderWidth: 1,
   },
   metricNum: {
-    fontSize: 22,
     fontWeight: '800',
     color: '#0f172a',
     marginTop: 8,
@@ -272,7 +338,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sectionTitle: {
-    fontSize: 15,
     fontWeight: '700',
     color: '#0f172a',
   },
@@ -294,7 +359,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   deadlineTitle: {
-    fontSize: 14,
     fontWeight: '700',
     color: '#0f172a',
   },
@@ -334,3 +398,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
