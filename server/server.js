@@ -122,9 +122,10 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 if (require.main === module) {
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-    console.log(`🔗 Health Check: http://localhost:${PORT}/api/health`);
+    console.log(`🔗 Local: http://localhost:${PORT}/api/health`);
+    console.log(`📱 LAN Network: http://10.20.24.212:${PORT}/api/health`);
   });
 }
 
