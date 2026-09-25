@@ -112,6 +112,7 @@ export const AuthProvider = ({ children }) => {
 
       setUser(userData);
       setToken(userToken);
+      setLoading(false);
 
       return {
         success: true,
@@ -137,6 +138,7 @@ export const AuthProvider = ({ children }) => {
 
       setUser(userData);
       setToken(userToken);
+      setLoading(false);
 
       return {
         success: true,
