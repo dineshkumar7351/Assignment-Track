@@ -223,8 +223,56 @@ const scanAssignmentSimilarity = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Direct on-the-fly text similarity comparison
+ * @route   POST /api/similarity/check
+ * @access  Private
+ */
+const checkTextSimilarity = async (req, res) => {
+  try {
+    const { text1, text2 } = req.body;
+
+    if (!text1 || !text2) {
+      return res.status(400).json({
+        success: false,
+        message: 'Both text1 and text2 are required for similarity comparison',
+      });
+    }
+
+    const docs = [
+      { id: 'text1', text: text1 },
+      { id: 'text2', text: text2 },
+    ];
+
+    const { vectors } = similarityService.generateTfIdfVectors(docs);
+    const vector1 = vectors.get('text1');
+    const vector2 = vectors.get('text2');
+
+    const similarityScore = similarityService.calculateCosineSimilarity(vector1, vector2);
+    const riskLevel = similarityService.classifyRisk(similarityScore);
+    const commonPhrases = similarityService.extractCommonPhrases(text1, text2, 3);
+
+    return res.status(200).json({
+      success: true,
+      similarityScore,
+      similarity: similarityScore,
+      percentage: similarityScore,
+      riskLevel,
+      commonPhrases,
+    });
+  } catch (error) {
+    console.error('Error in checkTextSimilarity:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Server error checking text similarity',
+    });
+  }
+};
+
 module.exports = {
   getTeacherSimilarityOverview,
   compareSubmissions,
   scanAssignmentSimilarity,
+  checkTextSimilarity,
 };
+
