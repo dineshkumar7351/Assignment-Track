@@ -1,0 +1,17 @@
+{
+  "name": "Smart Assignment Tracker",
+  "short_name": "SmartTracker",
+  "description": "Unified full-stack academic management and assignment tracking platform.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
