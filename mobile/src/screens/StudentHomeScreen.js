@@ -19,6 +19,9 @@ import {
   Sparkles,
   Calendar,
   LogOut,
+  Bell,
+  User,
+  Zap,
 } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import { useResponsive } from '../utils/responsive';
@@ -101,8 +104,91 @@ export default function StudentHomeScreen({ navigation }) {
                   {user?.department || 'Student Workspace'}
                 </Text>
               </View>
-              <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
-                <LogOut size={18} color="#ef4444" />
+
+              <View style={styles.headerIconsRow}>
+                <TouchableOpacity
+                  style={styles.headerIconBtn}
+                  onPress={() => navigation.navigate('Notifications')}
+                >
+                  <Bell size={18} color="#4f46e5" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.headerIconBtn}
+                  onPress={() => navigation.navigate('Analytics')}
+                >
+                  <TrendingUp size={18} color="#059669" />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
+                  <LogOut size={18} color="#ef4444" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          {/* Quick Hub - All 7 Modules Navigation Grid */}
+          <View style={styles.quickHubCard}>
+            <Text style={[styles.quickHubTitle, { fontSize: moderateScale(13) }]}>ACADEMIC PORTAL TOOLS</Text>
+            <View style={styles.quickHubGrid}>
+              <TouchableOpacity
+                style={styles.quickHubItem}
+                onPress={() => navigation.navigate('Assignments')}
+              >
+                <View style={[styles.quickIconBox, { backgroundColor: '#eef2ff' }]}>
+                  <BookOpen size={18} color="#4f46e5" />
+                </View>
+                <Text style={styles.quickHubLabel}>Assignments</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickHubItem}
+                onPress={() => navigation.navigate('AiAssistant')}
+              >
+                <View style={[styles.quickIconBox, { backgroundColor: '#fdf4ff' }]}>
+                  <Sparkles size={18} color="#9333ea" />
+                </View>
+                <Text style={styles.quickHubLabel}>AI Assistant</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickHubItem}
+                onPress={() => navigation.navigate('Calendar')}
+              >
+                <View style={[styles.quickIconBox, { backgroundColor: '#ecfdf5' }]}>
+                  <Calendar size={18} color="#059669" />
+                </View>
+                <Text style={styles.quickHubLabel}>Calendar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickHubItem}
+                onPress={() => navigation.navigate('Analytics')}
+              >
+                <View style={[styles.quickIconBox, { backgroundColor: '#fffbeb' }]}>
+                  <TrendingUp size={18} color="#d97706" />
+                </View>
+                <Text style={styles.quickHubLabel}>Analytics</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickHubItem}
+                onPress={() => navigation.navigate('Notifications')}
+              >
+                <View style={[styles.quickIconBox, { backgroundColor: '#fff1f2' }]}>
+                  <Bell size={18} color="#e11d48" />
+                </View>
+                <Text style={styles.quickHubLabel}>Notifications</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickHubItem}
+                onPress={() => navigation.navigate('Profile')}
+              >
+                <View style={[styles.quickIconBox, { backgroundColor: '#f1f5f9' }]}>
+                  <User size={18} color="#475569" />
+                </View>
+                <Text style={styles.quickHubLabel}>Profile</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -283,10 +369,69 @@ const styles = StyleSheet.create({
     color: '#64748b',
     marginTop: 1,
   },
+  headerIconsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  headerIconBtn: {
+    padding: 8,
+    borderRadius: 10,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
   logoutBtn: {
     padding: 8,
     borderRadius: 10,
     backgroundColor: '#fef2f2',
+  },
+  quickHubCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 16,
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  quickHubTitle: {
+    fontWeight: '800',
+    color: '#64748b',
+    letterSpacing: 0.5,
+    marginBottom: 12,
+  },
+  quickHubGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  quickHubItem: {
+    width: '30%',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderRadius: 14,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  quickIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  quickHubLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#334155',
   },
   centerLoading: {
     padding: 40,
