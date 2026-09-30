@@ -42,13 +42,17 @@ export default function CalendarScreen({ navigation }) {
 
   const fetchCalendar = async () => {
     try {
-      const res = await api.get(`/calendar/events?month=${currentMonth}&year=${currentYear}`);
+      const res = await api.get('/calendar', {
+        params: { month: currentMonth, year: currentYear },
+      });
       if (res.data?.success) {
         const eventsData = res.data.data?.eventsByDate || res.data.data || {};
         const flatList = [];
         if (typeof eventsData === 'object' && !Array.isArray(eventsData)) {
           Object.keys(eventsData).forEach((dateKey) => {
-            eventsData[dateKey].forEach((ev) => flatList.push({ ...ev, dateKey }));
+            if (Array.isArray(eventsData[dateKey])) {
+              eventsData[dateKey].forEach((ev) => flatList.push({ ...ev, dateKey }));
+            }
           });
         } else if (Array.isArray(eventsData)) {
           flatList.push(...eventsData);
@@ -56,7 +60,7 @@ export default function CalendarScreen({ navigation }) {
         setEvents(flatList);
       }
     } catch (err) {
-      console.error('Failed to load calendar events', err);
+      console.warn('Calendar events note:', err.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
