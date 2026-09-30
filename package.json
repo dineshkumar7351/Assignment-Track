@@ -6,8 +6,12 @@
   "scripts": {
     "build": "node build.js",
     "vercel-build": "node build.js",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,magenta\" \"node server/server.js\" \"npm --prefix client run dev\"",
     "start": "node server/server.js",
     "mobile": "npm --prefix mobile start",
+    "mobile:android": "npm --prefix mobile run android",
+    "mobile:web": "npm --prefix mobile run web",
+    "mobile:ios": "npm --prefix mobile run ios",
     "seed:admin": "node server/scripts/seedAdmin.js",
     "seed:academic": "node server/scripts/seedAcademicData.js"
   },

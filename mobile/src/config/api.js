@@ -26,7 +26,7 @@ export const getBackendUrl = () => {
   }
 
   // Fallback LAN IP for direct local Wi-Fi testing
-  return 'http://10.20.24.212:5000/api';
+  return 'http://10.20.18.83:5000/api';
 };
 
 export const API_BASE_URL = getBackendUrl();

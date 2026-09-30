@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GraduationCap, User, Mail, Lock, Building2, BadgeCheck, UserPlus } from 'lucide-react-native';
+import { GraduationCap, User, Mail, Lock, Building2, BadgeCheck, UserPlus, ArrowLeft } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import { useResponsive } from '../utils/responsive';
 
@@ -81,6 +81,15 @@ export default function RegisterScreen({ navigation }) {
           showsVerticalScrollIndicator={false}
         >
           <View style={[styles.innerContainer, containerStyle]}>
+            {/* Top Navigation Row */}
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.canGoBack() ? navigation.goBack() : navigation.navigate('WelcomeHome')}
+            >
+              <ArrowLeft size={20} color="#475569" />
+              <Text style={styles.backButtonText}>Home</Text>
+            </TouchableOpacity>
+
             {/* Header */}
             <View style={styles.header}>
               <View
@@ -281,6 +290,24 @@ const styles = StyleSheet.create({
   innerContainer: {
     alignSelf: 'center',
     width: '100%',
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 10,
+  },
+  backButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#475569',
   },
   header: {
     alignItems: 'center',

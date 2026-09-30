@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LayoutDashboard, BookOpen, User, Shield } from 'lucide-react-native';
 
 import { useAuth } from '../context/AuthContext';
+import WelcomeHomeScreen from '../screens/WelcomeHomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import StudentHomeScreen from '../screens/StudentHomeScreen';
@@ -17,23 +19,37 @@ import ProfileScreen from '../screens/ProfileScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+function getTabBarStyle(insets, activeColor) {
+  const bottomInset = insets.bottom || 0;
+  return {
+    backgroundColor: '#ffffff',
+    borderTopColor: '#e2e8f0',
+    borderTopWidth: 1,
+    height: Platform.OS === 'android' ? 68 + bottomInset : 58 + bottomInset,
+    paddingBottom: Math.max(bottomInset, 10),
+    paddingTop: 8,
+    elevation: 12,
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+  };
+}
+
 function StudentTabNavigator() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#4f46e5',
         tabBarInactiveTintColor: '#64748b',
-        tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopColor: '#e2e8f0',
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
-        },
+        tabBarStyle: getTabBarStyle(insets, '#4f46e5'),
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: '700',
+          marginTop: 2,
         },
       }}
     >
@@ -41,21 +57,24 @@ function StudentTabNavigator() {
         name="Dashboard"
         component={StudentHomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <LayoutDashboard color={color} size={size} />,
+          tabBarLabel: 'Dashboard',
+          tabBarIcon: ({ color, size }) => <LayoutDashboard color={color} size={size || 22} />,
         }}
       />
       <Tab.Screen
         name="Assignments"
         component={AssignmentsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <BookOpen color={color} size={size} />,
+          tabBarLabel: 'Assignments',
+          tabBarIcon: ({ color, size }) => <BookOpen color={color} size={size || 22} />,
         }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => <User color={color} size={size || 22} />,
         }}
       />
     </Tab.Navigator>
@@ -63,22 +82,19 @@ function StudentTabNavigator() {
 }
 
 function TeacherTabNavigator() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#059669',
         tabBarInactiveTintColor: '#64748b',
-        tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopColor: '#e2e8f0',
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
-        },
+        tabBarStyle: getTabBarStyle(insets, '#059669'),
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: '700',
+          marginTop: 2,
         },
       }}
     >
@@ -86,21 +102,24 @@ function TeacherTabNavigator() {
         name="Dashboard"
         component={TeacherHomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <LayoutDashboard color={color} size={size} />,
+          tabBarLabel: 'Dashboard',
+          tabBarIcon: ({ color, size }) => <LayoutDashboard color={color} size={size || 22} />,
         }}
       />
       <Tab.Screen
         name="Assignments"
         component={AssignmentsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <BookOpen color={color} size={size} />,
+          tabBarLabel: 'Assignments',
+          tabBarIcon: ({ color, size }) => <BookOpen color={color} size={size || 22} />,
         }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => <User color={color} size={size || 22} />,
         }}
       />
     </Tab.Navigator>
@@ -108,22 +127,19 @@ function TeacherTabNavigator() {
 }
 
 function AdminTabNavigator() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#e11d48',
         tabBarInactiveTintColor: '#64748b',
-        tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopColor: '#e2e8f0',
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
-        },
+        tabBarStyle: getTabBarStyle(insets, '#e11d48'),
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: '700',
+          marginTop: 2,
         },
       }}
     >
@@ -131,21 +147,24 @@ function AdminTabNavigator() {
         name="Dashboard"
         component={AdminHomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <Shield color={color} size={size} />,
+          tabBarLabel: 'Dashboard',
+          tabBarIcon: ({ color, size }) => <Shield color={color} size={size || 22} />,
         }}
       />
       <Tab.Screen
         name="Assignments"
         component={AssignmentsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <BookOpen color={color} size={size} />,
+          tabBarLabel: 'Assignments',
+          tabBarIcon: ({ color, size }) => <BookOpen color={color} size={size || 22} />,
         }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => <User color={color} size={size || 22} />,
         }}
       />
     </Tab.Navigator>
@@ -176,6 +195,7 @@ export default function AppNavigator() {
           )
         ) : (
           <>
+            <Stack.Screen name="WelcomeHome" component={WelcomeHomeScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
           </>
