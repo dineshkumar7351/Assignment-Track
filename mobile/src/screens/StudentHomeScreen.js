@@ -27,10 +27,12 @@ import {
   FileCheck,
   ChevronRight,
   User,
+  Menu,
 } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import { useResponsive } from '../utils/responsive';
 import api from '../config/api';
+import SideDrawer from '../components/SideDrawer';
 
 export default function StudentHomeScreen({ navigation }) {
   const { user, logout } = useAuth();
@@ -39,6 +41,7 @@ export default function StudentHomeScreen({ navigation }) {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const fetchDashboardData = async () => {
     try {
@@ -113,9 +116,25 @@ export default function StudentHomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      {/* Top Brand Bar */}
+      {/* Side Drawer Modal */}
+      <SideDrawer
+        visible={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        activeRoute="Dashboard"
+        navigation={navigation}
+      />
+
+      {/* Top Brand Bar with Hamburger Menu */}
       <View style={styles.topBrandBar}>
         <View style={styles.topBrandLeft}>
+          <TouchableOpacity
+            style={styles.menuBtn}
+            onPress={() => setDrawerOpen(true)}
+            activeOpacity={0.7}
+          >
+            <Menu size={22} color="#4f46e5" />
+          </TouchableOpacity>
+
           <View style={styles.topAppLogo}>
             <Sparkles size={16} color="#ffffff" />
           </View>
@@ -428,7 +447,13 @@ const styles = StyleSheet.create({
   topBrandLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
+  },
+  menuBtn: {
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: '#f1f5f9',
+    marginRight: 4,
   },
   topAppLogo: {
     width: 32,

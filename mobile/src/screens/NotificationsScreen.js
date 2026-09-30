@@ -17,9 +17,11 @@ import {
   Award,
   AlertTriangle,
   Sparkles,
+  Menu,
 } from 'lucide-react-native';
 import api from '../config/api';
 import { useResponsive } from '../utils/responsive';
+import SideDrawer from '../components/SideDrawer';
 
 export default function NotificationsScreen({ navigation }) {
   const { containerStyle, moderateScale, screenPadding } = useResponsive();
@@ -27,6 +29,7 @@ export default function NotificationsScreen({ navigation }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const fetchNotifications = async () => {
     try {
@@ -59,10 +62,24 @@ export default function NotificationsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <SideDrawer
+        visible={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        activeRoute="Notifications"
+        navigation={navigation}
+      />
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Bell size={22} color="#4f46e5" />
+          <TouchableOpacity
+            style={styles.menuBtn}
+            onPress={() => setDrawerOpen(true)}
+            activeOpacity={0.7}
+          >
+            <Menu size={22} color="#4f46e5" />
+          </TouchableOpacity>
+          <Bell size={20} color="#4f46e5" />
           <Text style={[styles.headerTitle, { fontSize: moderateScale(18) }]}>Notifications</Text>
           {unreadCount > 0 ? (
             <View style={styles.unreadBadge}>
@@ -158,6 +175,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  menuBtn: {
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: '#f1f5f9',
+    marginRight: 2,
   },
   headerTitle: {
     fontWeight: '800',

@@ -9,15 +9,17 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BookOpen, Clock, Calendar, CheckCircle2, ChevronRight } from 'lucide-react-native';
+import { BookOpen, Clock, Calendar, CheckCircle2, ChevronRight, Menu } from 'lucide-react-native';
 import api from '../config/api';
 import { useResponsive } from '../utils/responsive';
+import SideDrawer from '../components/SideDrawer';
 
 export default function AssignmentsScreen({ navigation }) {
   const { isTablet, padding, containerStyle, ms } = useResponsive();
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [filter, setFilter] = useState('all');
 
   const fetchAssignments = async () => {
@@ -75,8 +77,22 @@ export default function AssignmentsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <SideDrawer
+        visible={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        activeRoute="Assignments"
+        navigation={navigation}
+      />
+
       <View style={[styles.header, { paddingHorizontal: padding }]}>
-        <View style={containerStyle}>
+        <View style={[styles.headerRow, containerStyle]}>
+          <TouchableOpacity
+            style={styles.menuBtn}
+            onPress={() => setDrawerOpen(true)}
+            activeOpacity={0.7}
+          >
+            <Menu size={22} color="#4f46e5" />
+          </TouchableOpacity>
           <Text style={[styles.headerTitle, { fontSize: ms(18) }]}>Coursework & Tasks</Text>
         </View>
       </View>
@@ -118,6 +134,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
     backgroundColor: '#ffffff',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  menuBtn: {
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: '#f1f5f9',
   },
   headerTitle: {
     fontSize: 18,

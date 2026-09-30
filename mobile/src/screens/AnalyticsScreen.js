@@ -4,6 +4,7 @@ import {
   Text,
   View,
   ScrollView,
+  TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
@@ -16,10 +17,12 @@ import {
   BookOpen,
   BarChart2,
   Percent,
+  Menu,
 } from 'lucide-react-native';
 import api from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import { useResponsive } from '../utils/responsive';
+import SideDrawer from '../components/SideDrawer';
 
 export default function AnalyticsScreen({ navigation }) {
   const { user } = useAuth();
@@ -27,6 +30,7 @@ export default function AnalyticsScreen({ navigation }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const fetchAnalytics = async () => {
     try {
@@ -66,10 +70,24 @@ export default function AnalyticsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <SideDrawer
+        visible={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        activeRoute="Analytics"
+        navigation={navigation}
+      />
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <TrendingUp size={22} color="#4f46e5" />
+          <TouchableOpacity
+            style={styles.menuBtn}
+            onPress={() => setDrawerOpen(true)}
+            activeOpacity={0.7}
+          >
+            <Menu size={22} color="#4f46e5" />
+          </TouchableOpacity>
+          <TrendingUp size={20} color="#4f46e5" />
           <Text style={[styles.headerTitle, { fontSize: moderateScale(18) }]}>
             Academic Analytics & Metrics
           </Text>
@@ -188,6 +206,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  menuBtn: {
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: '#f1f5f9',
+    marginRight: 2,
   },
   headerTitle: {
     fontWeight: '800',

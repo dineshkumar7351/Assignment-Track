@@ -20,9 +20,11 @@ import {
   Send,
   Zap,
   RefreshCw,
+  Menu,
 } from 'lucide-react-native';
 import api from '../config/api';
 import { useResponsive } from '../utils/responsive';
+import SideDrawer from '../components/SideDrawer';
 
 export default function AiAssistantScreen({ navigation }) {
   const { containerStyle, moderateScale, screenPadding } = useResponsive();
@@ -32,6 +34,7 @@ export default function AiAssistantScreen({ navigation }) {
   const [subject, setSubject] = useState('Computer Science');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleAskAI = async () => {
     if (!topicInput.trim()) return;
@@ -80,10 +83,24 @@ export default function AiAssistantScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <SideDrawer
+        visible={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        activeRoute="AiAssistant"
+        navigation={navigation}
+      />
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <Sparkles size={22} color="#4f46e5" />
+          <TouchableOpacity
+            style={styles.menuBtn}
+            onPress={() => setDrawerOpen(true)}
+            activeOpacity={0.7}
+          >
+            <Menu size={22} color="#4f46e5" />
+          </TouchableOpacity>
+          <Sparkles size={20} color="#4f46e5" />
           <Text style={[styles.headerTitle, { fontSize: moderateScale(18) }]}>AI Academic Tutor</Text>
         </View>
         <View style={styles.modelBadge}>
@@ -235,6 +252,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  menuBtn: {
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: '#f1f5f9',
+    marginRight: 2,
   },
   headerTitle: {
     fontWeight: '800',

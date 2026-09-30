@@ -15,18 +15,39 @@ import {
   Shield,
   LogOut,
   Sparkles,
+  Menu,
 } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import { useResponsive } from '../utils/responsive';
+import SideDrawer from '../components/SideDrawer';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
   const { isTablet, padding, containerStyle, ms } = useResponsive();
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   const avatarSize = isTablet ? 84 : 68;
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <SideDrawer
+        visible={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        activeRoute="Profile"
+        navigation={navigation}
+      />
+
+      <View style={styles.topHeader}>
+        <TouchableOpacity
+          style={styles.menuBtn}
+          onPress={() => setDrawerOpen(true)}
+          activeOpacity={0.7}
+        >
+          <Menu size={22} color="#4f46e5" />
+        </TouchableOpacity>
+        <Text style={styles.topHeaderTitle}>User Profile</Text>
+      </View>
+
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { padding: padding, paddingBottom: 48 }]}
         showsVerticalScrollIndicator={false}
@@ -101,6 +122,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8fafc',
+  },
+  topHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+    backgroundColor: '#ffffff',
+    gap: 12,
+  },
+  menuBtn: {
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: '#f1f5f9',
+  },
+  topHeaderTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#0f172a',
   },
   scrollContent: {
     padding: 16,
