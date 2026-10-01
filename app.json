@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "AssignTrack - Smart Assignment Tracker",
+    "slug": "smart-assignment-tracker",
+    "version": "1.0.0",
+    "entryPoint": "./index.js",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#090d16"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#090d16"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    }
+  }
+}

@@ -39,3 +39,8 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Expo
+.expo/
+.expo-shared/
+web-build/
