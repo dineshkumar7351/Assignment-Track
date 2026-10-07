@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Bell,
   CheckCircle2,
@@ -10,10 +10,13 @@ import {
   CheckCheck,
   ArrowUpRight,
   Sparkles,
+  RefreshCw,
 } from 'lucide-react';
+import api from '../services/api';
 
 const NotificationsPage = () => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -26,7 +29,7 @@ const NotificationsPage = () => {
     {
       id: 2,
       title: 'Task Assigned: Develop API Endpoints',
-      desc: 'Alexandra Deff assigned you to the backend authentication milestone.',
+      desc: 'Faculty assigned you to the backend authentication milestone.',
       type: 'task',
       time: '2 hours ago',
       read: false,
@@ -49,12 +52,57 @@ const NotificationsPage = () => {
     },
   ]);
 
-  const markAllRead = () => {
+  const loadNotifications = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/notifications');
+      if (response.data && response.data.success && response.data.notifications?.length > 0) {
+        const mapped = response.data.notifications.map((n) => ({
+          id: n._id || n.id,
+          title: n.title,
+          desc: n.message || n.desc,
+          type: n.type || 'system',
+          time: n.createdAt ? new Date(n.createdAt).toLocaleDateString() : 'Recent',
+          read: n.isRead ?? n.read ?? false,
+        }));
+        setNotifications(mapped);
+      }
+    } catch (err) {
+      console.warn('Notifications fetch fallback:', err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
+
+  const markAllRead = async () => {
+    try {
+      await api.put('/notifications/read-all');
+    } catch (err) {
+      console.warn('Mark all read note:', err.message);
+    }
     setNotifications(notifications.map((n) => ({ ...n, read: true })));
   };
 
-  const deleteNotification = (id) => {
+  const deleteNotification = async (id) => {
+    try {
+      await api.delete(`/notifications/${id}`);
+    } catch (err) {
+      console.warn('Delete notification note:', err.message);
+    }
     setNotifications(notifications.filter((n) => n.id !== id));
+  };
+
+  const markAsRead = async (id) => {
+    try {
+      await api.put(`/notifications/${id}/read`);
+    } catch (err) {
+      console.warn('Mark read note:', err.message);
+    }
+    setNotifications(notifications.map((n) => (n.id === id ? { ...n, read: true } : n)));
   };
 
   const filtered = notifications.filter((n) => {

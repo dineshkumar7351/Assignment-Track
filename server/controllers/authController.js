@@ -244,17 +244,47 @@ const updateProfile = async (req, res, next) => {
       throw new Error('User not found');
     }
 
-    const { fullName, phone, bio, notificationPreferences } = req.body;
+    const {
+      fullName,
+      phone,
+      bio,
+      department,
+      studentId,
+      employeeId,
+      profileImage,
+      semester,
+      academicBatch,
+      branch,
+      section,
+      githubUrl,
+      linkedinUrl,
+      websiteUrl,
+      preferences,
+      notificationPreferences,
+    } = req.body;
 
-    if (fullName && fullName.trim()) {
-      user.fullName = fullName.trim();
+    if (fullName && fullName.trim()) user.fullName = fullName.trim();
+    if (department !== undefined) user.department = department.trim();
+    if (studentId !== undefined) user.studentId = studentId.trim();
+    if (employeeId !== undefined) user.employeeId = employeeId.trim();
+    if (profileImage !== undefined) user.profileImage = profileImage;
+    if (phone !== undefined) user.phone = phone;
+    if (bio !== undefined) user.bio = bio;
+    if (semester !== undefined) user.semester = semester;
+    if (academicBatch !== undefined) user.academicBatch = academicBatch;
+    if (branch !== undefined) user.branch = branch;
+    if (section !== undefined) user.section = section;
+    if (githubUrl !== undefined) user.githubUrl = githubUrl;
+    if (linkedinUrl !== undefined) user.linkedinUrl = linkedinUrl;
+    if (websiteUrl !== undefined) user.websiteUrl = websiteUrl;
+
+    if (preferences) {
+      user.preferences = {
+        ...user.preferences,
+        ...preferences,
+      };
     }
-    if (phone !== undefined) {
-      user.phone = phone;
-    }
-    if (bio !== undefined) {
-      user.bio = bio;
-    }
+
     if (notificationPreferences) {
       user.notificationPreferences = {
         ...user.notificationPreferences,
@@ -275,8 +305,17 @@ const updateProfile = async (req, res, next) => {
         department: updatedUser.department,
         studentId: updatedUser.studentId,
         employeeId: updatedUser.employeeId,
+        profileImage: updatedUser.profileImage,
         phone: updatedUser.phone,
         bio: updatedUser.bio,
+        semester: updatedUser.semester,
+        academicBatch: updatedUser.academicBatch,
+        branch: updatedUser.branch,
+        section: updatedUser.section,
+        githubUrl: updatedUser.githubUrl,
+        linkedinUrl: updatedUser.linkedinUrl,
+        websiteUrl: updatedUser.websiteUrl,
+        preferences: updatedUser.preferences,
         notificationPreferences: updatedUser.notificationPreferences,
         createdAt: updatedUser.createdAt,
       },

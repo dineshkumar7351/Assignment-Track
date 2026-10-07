@@ -10,7 +10,10 @@ import {
   ArrowUpRight,
   Video,
   X,
+  RefreshCw,
+  BookOpen,
 } from 'lucide-react';
+import api from '../services/api';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -27,6 +30,7 @@ const CalendarPage = () => {
   const [showAddEventModal, setShowAddEventModal] = useState(false);
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventTime, setNewEventTime] = useState('02:00 PM - 03:30 PM');
+  const [loading, setLoading] = useState(false);
 
   const [events, setEvents] = useState([
     {
@@ -62,6 +66,39 @@ const CalendarPage = () => {
       color: 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300',
     },
   ]);
+
+  const loadCalendarEvents = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/calendar', {
+        params: { year: currentYear, month: currentMonth },
+      });
+      if (response.data && response.data.success && response.data.events?.length > 0) {
+        const mapped = response.data.events.map((ev) => ({
+          id: ev.id || ev._id,
+          day: ev.day || new Date(ev.deadline).getDate(),
+          title: ev.title,
+          time: ev.timeFormatted || '11:59 PM',
+          type: ev.status === 'submitted' ? 'completed' : 'assignment',
+          color: ev.status === 'submitted'
+            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+            : ev.status === 'overdue'
+            ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+            : 'bg-[#104f37] text-white',
+          subject: ev.subject,
+        }));
+        setEvents(mapped);
+      }
+    } catch (err) {
+      console.warn('Calendar fetch fallback:', err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentYear, currentMonth]);
+
+  useEffect(() => {
+    loadCalendarEvents();
+  }, [loadCalendarEvents]);
 
   const handlePrevMonth = () => {
     if (currentMonth === 1) {

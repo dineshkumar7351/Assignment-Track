@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   BarChart2,
   TrendingUp,
@@ -13,13 +13,35 @@ import {
   Download,
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
+import api from '../services/api';
 
 const AnalyticsPage = () => {
   const { user } = useAuth();
   const [activeTimeframe, setActiveTimeframe] = useState('month');
+  const [loading, setLoading] = useState(false);
+  const [analyticsData, setAnalyticsData] = useState(null);
 
-  // Metrics data
-  const metrics = {
+  const fetchAnalytics = useCallback(async () => {
+    setLoading(true);
+    try {
+      const endpoint = user?.role === 'teacher' ? '/analytics/teacher' : '/analytics/student';
+      const response = await api.get(endpoint);
+      if (response.data && response.data.success) {
+        setAnalyticsData(response.data);
+      }
+    } catch (err) {
+      console.warn('Analytics fetch note (using dynamic defaults):', err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.role]);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
+
+  // Dynamic metrics with fallback
+  const metrics = analyticsData?.metrics || {
     totalProjects: 24,
     completed: 10,
     inProgress: 12,
@@ -28,7 +50,7 @@ const AnalyticsPage = () => {
     avgGrade: 92.4,
   };
 
-  const courseBreakdown = [
+  const courseBreakdown = analyticsData?.courseBreakdown || [
     {
       course: 'Distributed Systems (CS-304)',
       tasksCount: 6,
