@@ -4,8 +4,11 @@
   "description": "Smart Assignment Tracker - Fullstack Academic Management Platform",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently -n \"SERVER,EXPO\" -c \"blue,magenta\" \"node server/server.js\" \"expo start --web\"",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"node server/server.js\" \"npm run dev --prefix client\"",
+    "dev:web": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"node server/server.js\" \"npm run dev --prefix client\"",
+    "dev:expo": "concurrently -n \"SERVER,EXPO\" -c \"blue,magenta\" \"node server/server.js\" \"expo start --web\"",
     "start": "node server/server.js",
+    "client": "npm run dev --prefix client",
     "expo": "expo start",
     "expo:web": "expo start --web",
     "expo:android": "expo start --android",
