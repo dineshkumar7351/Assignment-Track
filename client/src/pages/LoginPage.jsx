@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { GraduationCap, ArrowLeft, LogIn, Mail, Lock, Sparkles, LayoutDashboard, LogOut, UserCheck } from 'lucide-react';
+import {
+  Mail,
+  Lock,
+  ArrowRight,
+  Sparkles,
+  UserCheck,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 import useAuth from '../hooks/useAuth';
-import Input from '../components/common/Input';
-import Button from '../components/common/Button';
-import Alert from '../components/common/Alert';
-import { ClerkSignInCard } from '../components/ClerkAuthCard';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, user, logout, isClerkActive } = useAuth();
-  const [showClerkForm, setShowClerkForm] = useState(false);
+  const { login, user, isClerkActive } = useAuth();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -28,28 +31,20 @@ const LoginPage = () => {
       ...prev,
       [name]: value,
     }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
-    if (serverError) {
-      setServerError('');
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
+    if (serverError) setServerError('');
   };
 
   const validate = () => {
     const newErrors = {};
-
     if (!formData.email.trim()) {
       newErrors.email = 'Email address is required';
-    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email.trim())) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       newErrors.email = 'Please provide a valid email format';
     }
-
     if (!formData.password) {
       newErrors.password = 'Password is required';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -57,29 +52,23 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setServerError('');
-
     if (!validate()) return;
 
     setLoading(true);
-
     const result = await login(formData.email.trim(), formData.password);
     setLoading(false);
 
     if (result.success) {
-      if (location.state?.from?.pathname) {
-        navigate(location.state.from.pathname, { replace: true });
-      } else {
-        const userRole = result.user?.role;
-        const targetPath =
-          userRole === 'admin'
-            ? '/admin/dashboard'
-            : userRole === 'teacher'
-            ? '/teacher/dashboard'
-            : '/student/dashboard';
-        navigate(targetPath, { replace: true });
-      }
+      const userRole = result.user?.role;
+      const targetPath =
+        userRole === 'admin'
+          ? '/admin/dashboard'
+          : userRole === 'teacher'
+          ? '/teacher/dashboard'
+          : '/dashboard';
+      navigate(location.state?.from?.pathname || targetPath, { replace: true });
     } else {
-      setServerError(result.message);
+      setServerError(result.message || 'Invalid credentials');
     }
   };
 
@@ -98,173 +87,203 @@ const LoginPage = () => {
           ? '/admin/dashboard'
           : userRole === 'teacher'
           ? '/teacher/dashboard'
-          : '/student/dashboard';
+          : '/dashboard';
       navigate(targetPath, { replace: true });
     } else {
-      setServerError(result.message);
+      setServerError(result.message || 'Demo login failed');
     }
   };
 
   return (
-    <div className="relative min-h-[85vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      {/* Background glow orbs */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-indigo-500/15 dark:bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none -z-10" />
+    <div className="min-h-[85vh] flex items-center justify-center p-3 sm:p-6 lg:p-8">
+      <div className="w-full max-w-5xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-none overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        {/* Left Visual Column: Dark Forest Green with Wave Texture (Col span 5) */}
+        <div className="lg:col-span-5 relative bg-[#0a1f18] text-white p-6 sm:p-12 flex flex-col justify-between overflow-hidden min-h-[280px] sm:min-h-[360px]">
+          {/* Wave Background */}
+          <img
+            src="/green-wave.jpg"
+            alt="Wave pattern"
+            className="absolute inset-0 w-full h-full object-cover opacity-35 mix-blend-luminosity"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a1f18] via-transparent to-[#0a1f18]/40" />
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <Link to="/" className="inline-flex items-center gap-2.5 group mb-6 hover:scale-105 transition-transform">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
-            <GraduationCap className="w-6 h-6" />
-          </div>
-          <span className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
-            Smart Assignment Tracker
-          </span>
-        </Link>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          Sign In
-        </h1>
-        <p className="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
-          Enter your credentials to access your academic dashboard
-        </p>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-
-        {isClerkActive && showClerkForm ? (
-          <div className="glass-card py-6 px-4 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
-            <ClerkSignInCard fallbackToggle={() => setShowClerkForm(false)} />
-            <div className="mt-4 text-center">
-              <button
-                type="button"
-                onClick={() => setShowClerkForm(false)}
-                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-bold"
+          {/* Top Logo */}
+          <div className="relative z-10 flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-emerald-400">
+              <svg
+                viewBox="0 0 32 32"
+                fill="none"
+                className="w-7 h-7"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                ← Back to Direct Email/Password Sign In
-              </button>
+                <circle cx="16" cy="16" r="14" stroke="#10b981" strokeWidth="2.5" />
+                <path
+                  d="M11 15C11 12.2386 13.2386 10 16 10C18.7614 10 21 12.2386 21 15C21 17.5 17.5 21 16 22C14.5 21 11 17.5 11 15Z"
+                  stroke="#10b981"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle cx="16" cy="14.5" r="2" fill="#10b981" />
+              </svg>
             </div>
+            <span className="font-extrabold text-xl tracking-tight text-white">
+              Assignment Track
+            </span>
           </div>
-        ) : (
-          <div className="glass-card py-8 px-6 sm:px-10 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
-            {/* Server error message */}
+
+          {/* Center Motivational Card */}
+          <div className="relative z-10 my-8 space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-emerald-300 text-xs font-bold border border-white/10">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Smart Task Management</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black leading-tight tracking-tight">
+              Plan, prioritize, and accomplish your tasks with ease.
+            </h2>
+            <p className="text-xs text-emerald-100/80 leading-relaxed">
+              Unify coursework schedules, automated milestones, and collaborative sprints into one workspace.
+            </p>
+          </div>
+
+          {/* Bottom Live Metric */}
+          <div className="relative z-10 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-between">
+            <div className="text-xs">
+              <div className="font-extrabold text-white">100% On-Time Sprints</div>
+              <div className="text-emerald-200/70 text-[10px]">Real-time progress sync</div>
+            </div>
+            <span className="text-xl font-black text-emerald-400">4.0 GPA</span>
+          </div>
+        </div>
+
+        {/* Right Form Column (Col span 7) */}
+        <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                Welcome back
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Enter your credentials to access your Assignment Track workspace.
+              </p>
+            </div>
+
+            {/* Error Message */}
             {serverError && (
-              <Alert
-                type="error"
-                message={serverError}
-                onClose={() => setServerError('')}
-                className="mb-6"
-              />
+              <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{serverError}</span>
+              </div>
             )}
 
-            <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                label="Academic Email"
-                placeholder="e.g. alex@college.edu"
-                icon={Mail}
-                required
-                value={formData.email}
-                onChange={handleChange}
-                error={errors.email}
-              />
-
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                label="Password"
-                placeholder="Enter your password"
-                icon={Lock}
-                required
-                value={formData.password}
-                onChange={handleChange}
-                error={errors.password}
-              />
-
-              <div className="pt-2">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  loading={loading}
-                  loadingText="Signing In..."
-                  icon={LogIn}
-                  className="w-full"
-                >
-                  Sign In to Portal
-                </Button>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="name@organization.edu"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-xs text-rose-500 font-semibold mt-1">
+                    {errors.email}
+                  </p>
+                )}
               </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
+                  />
+                </div>
+                {errors.password && (
+                  <p className="text-xs text-rose-500 font-semibold mt-1">
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-full bg-[#104f37] hover:bg-[#0d3f2c] text-white text-sm font-bold shadow-md shadow-emerald-950/20 hover:shadow-emerald-950/35 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60"
+              >
+                {loading ? (
+                  <span>Signing In...</span>
+                ) : (
+                  <>
+                    <span>Sign In</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             </form>
 
-            {/* Quick 1-Click Demo Login for All Roles */}
-            <div className="mt-7 pt-6 border-t border-slate-100 dark:border-slate-800">
-              <div className="flex items-center justify-center gap-1.5 mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  1-Click Instant Demo Login
-                </p>
-              </div>
-              <div className="grid grid-cols-3 gap-2.5">
+            {/* Quick 1-Click Demo Logins */}
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                ⚡ Quick Demo Accounts
+              </span>
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
-                  onClick={() => handleQuickDemoLogin('john.student@college.edu', 'Password@123')}
-                  className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200/80 dark:border-indigo-800/80 transition-all text-indigo-700 dark:text-indigo-300 group cursor-pointer hover:scale-[1.03]"
+                  onClick={() =>
+                    handleQuickDemoLogin('student@smarttracker.edu', 'StudentPass123!')
+                  }
+                  className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
                 >
-                  <span className="text-lg mb-0.5">🎓</span>
-                  <span className="text-xs font-bold">Student</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">John</span>
+                  🎓 Student
                 </button>
-
                 <button
                   type="button"
-                  onClick={() => handleQuickDemoLogin('sarah.teacher@college.edu', 'Password@123')}
-                  className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800/80 transition-all text-emerald-700 dark:text-emerald-300 group cursor-pointer hover:scale-[1.03]"
+                  onClick={() =>
+                    handleQuickDemoLogin('teacher@smarttracker.edu', 'TeacherPass123!')
+                  }
+                  className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
                 >
-                  <span className="text-lg mb-0.5">👨‍🏫</span>
-                  <span className="text-xs font-bold">Teacher</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">Dr. Sarah</span>
+                  👨‍🏫 Faculty
                 </button>
-
                 <button
                   type="button"
-                  onClick={() => handleQuickDemoLogin('admin@college.edu', 'Admin@123456')}
-                  className="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-rose-50/80 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200/80 dark:border-rose-800/80 transition-all text-rose-700 dark:text-rose-300 group cursor-pointer hover:scale-[1.03]"
+                  onClick={() =>
+                    handleQuickDemoLogin('admin@smarttracker.edu', 'AdminPass123!')
+                  }
+                  className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
                 >
-                  <span className="text-lg mb-0.5">🛡️</span>
-                  <span className="text-xs font-bold">Admin</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">Campus</span>
+                  🛡️ Admin
                 </button>
               </div>
-            </div>
-
-            {isClerkActive && (
-              <div className="mt-4 text-center">
-                <button
-                  type="button"
-                  onClick={() => setShowClerkForm(true)}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-bold"
-                >
-                  Or Sign In via Social / Google (Clerk) →
-                </button>
-              </div>
-            )}
-
-            <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-6 text-center text-xs text-slate-600 dark:text-slate-400 font-medium">
-              Don't have an account?{' '}
-              <Link to="/register" className="font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
-                Create an Account
-              </Link>
             </div>
           </div>
-        )}
 
-        <div className="mt-6 text-center">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Home</span>
-          </Link>
+          {/* Footer Link */}
+          <div className="pt-6 text-center text-xs text-slate-500 font-medium">
+            Don't have an account?{' '}
+            <Link
+              to="/register"
+              className="font-bold text-[#104f37] hover:underline dark:text-emerald-400"
+            >
+              Sign up free
+            </Link>
+          </div>
         </div>
       </div>
     </div>

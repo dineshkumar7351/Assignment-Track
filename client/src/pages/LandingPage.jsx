@@ -177,72 +177,268 @@ const LandingPage = () => {
 
   const gradeMeta = getGradeMeta(computedTotal);
 
+  // Demo Modal state
+  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [activeDemoTab, setActiveDemoTab] = useState('tracking');
+
   return (
-    <div className="space-y-24 sm:space-y-32 py-6 sm:py-12">
+    <div className="space-y-20 sm:space-y-28 py-4 sm:py-8">
       {/* ========================================================================= */}
-      {/* 1. HERO SECTION (Clean, High-Craft Human SaaS Layout) */}
+      {/* 1. HERO SECTION (Matching Assignment Tracker reference layout) */}
       {/* ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-4 sm:pt-10">
-        {/* Release Pill Badge */}
-        <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 text-xs font-bold text-indigo-700 dark:text-indigo-300 mb-8 shadow-xs hover:border-indigo-300 transition-colors">
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600 dark:bg-indigo-400" />
-          </span>
-          <span>AssignTrack 2.6 is live</span>
-          <span className="text-slate-400 dark:text-slate-600">•</span>
-          <span className="text-slate-600 dark:text-slate-300 font-medium">Auto-Rubric & Plagiarism Diff</span>
-          <ChevronRight className="w-3.5 h-3.5 text-indigo-500" />
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          {/* Left Column: Headline & Action Buttons */}
+          <div className="lg:col-span-6 space-y-6 text-left">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.12]">
+              Stay Organized <br />
+              <span className="text-[#104f37] dark:text-emerald-400">Achieve More</span>
+            </h1>
+
+            <p className="text-base sm:text-lg text-slate-500 dark:text-slate-300 max-w-lg leading-relaxed font-normal">
+              Track your assignments, never miss a deadline, and manage your projects with ease.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <Link
+                to="/register"
+                className="px-8 py-3.5 rounded-full bg-[#104f37] hover:bg-[#0d3f2c] text-white font-bold text-sm sm:text-base shadow-lg shadow-emerald-950/20 hover:shadow-emerald-950/35 hover:-translate-y-0.5 transition-all cursor-pointer"
+              >
+                Get Started
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowDemoModal(true)}
+                className="px-7 py-3.5 rounded-full bg-emerald-50 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-slate-750 text-[#104f37] dark:text-emerald-400 font-bold text-sm sm:text-base border border-emerald-200/80 dark:border-slate-700 flex items-center gap-2.5 transition-all cursor-pointer hover:-translate-y-0.5"
+              >
+                <Play className="w-4 h-4 fill-[#104f37] dark:fill-emerald-400 text-[#104f37] dark:text-emerald-400" />
+                <span>Watch Demo</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right Column: 3D Student Illustration with Glow Aura */}
+          <div className="lg:col-span-6 relative flex items-center justify-center">
+            <div className="absolute -inset-4 bg-gradient-to-tr from-emerald-100/60 via-teal-100/40 to-slate-100/50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-transparent rounded-full blur-3xl -z-10" />
+
+            <div className="relative w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl shadow-emerald-950/10 border border-emerald-100/60 dark:border-slate-800 bg-white dark:bg-slate-900 group">
+              <img
+                src="/hero-student.jpg"
+                alt="Stay Organized, Achieve More with Assignment Track"
+                className="w-full h-auto object-cover transform group-hover:scale-[1.02] transition-transform duration-500"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Headline */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-5xl mx-auto leading-[1.08] mb-6">
-          The intelligent assignment OS <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 dark:from-indigo-400 dark:via-purple-400 dark:to-cyan-400">
-            for high-performing universities.
-          </span>
-        </h1>
+        {/* 4 Feature Cards (Pills with matching icons & badges) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-12">
+          {/* Card 1: Track Tasks */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-lg shadow-slate-100/70 dark:shadow-none hover:shadow-xl hover:border-emerald-200 dark:hover:border-emerald-800 transition-all group cursor-pointer">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <CheckSquare className="w-6 h-6" />
+            </div>
+            <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">
+              Track Tasks
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-snug">
+              Keep all your assignments in one place
+            </p>
+          </div>
 
-        {/* Subtitle */}
-        <p className="text-base sm:text-xl font-normal text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
-          Unify course submissions, automated rubric grading, and real-time plagiarism detection into one ultra-fast workspace. Built for students who care about deadlines and faculty who demand rigor.
-        </p>
+          {/* Card 2: Stay on Time */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-lg shadow-slate-100/70 dark:shadow-none hover:shadow-xl hover:border-emerald-200 dark:hover:border-emerald-800 transition-all group cursor-pointer">
+            <div className="w-12 h-12 rounded-2xl bg-[#104f37]/15 dark:bg-[#104f37]/50 text-[#104f37] dark:text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Clock className="w-6 h-6" />
+            </div>
+            <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">
+              Stay on Time
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-snug">
+              Get reminders for deadlines
+            </p>
+          </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-6">
-          <Link
-            to="/register"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm sm:text-base font-bold rounded-xl shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/35 hover:-translate-y-0.5 transition-all cursor-pointer"
-          >
-            <span>Create Free Account</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          {/* Card 3: Upload Files */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-lg shadow-slate-100/70 dark:shadow-none hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-800 transition-all group cursor-pointer">
+            <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <FileText className="w-6 h-6" />
+            </div>
+            <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">
+              Upload Files
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-snug">
+              Store and access your resources
+            </p>
+          </div>
 
-          <Link
-            to="/login"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm sm:text-base font-bold rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs hover:-translate-y-0.5 transition-all cursor-pointer"
-          >
-            <span>Sign In to Portal</span>
-          </Link>
+          {/* Card 4: AI Assistant */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-lg shadow-slate-100/70 dark:shadow-none hover:shadow-xl hover:border-teal-200 dark:hover:border-teal-800 transition-all group cursor-pointer">
+            <div className="w-12 h-12 rounded-2xl bg-teal-100 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">
+              AI Assistant
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-snug">
+              Get help with doubt and ideas
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* INTERACTIVE DEMO MODAL */}
+      {/* ========================================================================= */}
+      {showDemoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden">
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#104f37] text-white flex items-center justify-center">
+                  <Play className="w-4 h-4 fill-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-slate-900 dark:text-white">Assignment Track Platform Tour</h3>
+                  <p className="text-xs text-slate-500">Experience how high-performing teams stay ahead</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDemoModal(false)}
+                className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body & Interactive Demo Tabs */}
+            <div className="p-6 sm:p-8 space-y-6">
+              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveDemoTab('tracking')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    activeDemoTab === 'tracking'
+                      ? 'bg-[#104f37] text-white shadow-sm'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  Task Tracking
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveDemoTab('ai')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    activeDemoTab === 'ai'
+                      ? 'bg-[#104f37] text-white shadow-sm'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  AI Assistant
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveDemoTab('similarity')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    activeDemoTab === 'similarity'
+                      ? 'bg-[#104f37] text-white shadow-sm'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  Cosine Similarity Check
+                </button>
+              </div>
+
+              {activeDemoTab === 'tracking' && (
+                <div className="space-y-4">
+                  <div className="p-5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/50 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">Live Sprint Workflow</span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-bold">● Active Sync</span>
+                    </div>
+                    <p className="text-sm text-slate-700 dark:text-slate-200">
+                      Sync deadlines with your personal Google Calendar, submit coursework with file drag-and-drop, and receive immediate teacher feedback.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3 text-center">
+                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                      <div className="text-lg font-black text-slate-900 dark:text-white">100%</div>
+                      <div className="text-[11px] text-slate-500">On-Time Submissions</div>
+                    </div>
+                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                      <div className="text-lg font-black text-emerald-700">0 missed</div>
+                      <div className="text-[11px] text-slate-500">Deadlines</div>
+                    </div>
+                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                      <div className="text-lg font-black text-emerald-600">4.0 GPA</div>
+                      <div className="text-[11px] text-slate-500">Projected Goal</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeDemoTab === 'ai' && (
+                <div className="p-5 rounded-2xl bg-teal-50/60 dark:bg-teal-950/30 border border-teal-100 dark:border-teal-900/50 space-y-3">
+                  <div className="flex items-center gap-2 text-teal-800 dark:text-teal-300 font-bold text-sm">
+                    <Bot className="w-5 h-5" />
+                    <span>AI Doubt Solver & Rubric Outliner</span>
+                  </div>
+                  <p className="text-sm text-slate-600 dark:text-slate-300">
+                    Ask questions directly on your assignment problem statement. Get hints, conceptual breakdowns, and reference citations without giving away answers.
+                  </p>
+                </div>
+              )}
+
+              {activeDemoTab === 'similarity' && (
+                <div className="p-5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/50 space-y-3">
+                  <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold text-sm">
+                    <SearchCheck className="w-5 h-5" />
+                    <span>N-Gram Tokenized Plagiarism Engine</span>
+                  </div>
+                  <p className="text-sm text-slate-600 dark:text-slate-300">
+                    Automatic pairwise cosine similarity comparison against peer submissions and database history with side-by-side color-coded diff highlights.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-5 sm:p-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDemoModal(false)}
+                className="px-5 py-2.5 rounded-full text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+              <Link
+                to="/register"
+                onClick={() => setShowDemoModal(false)}
+                className="px-6 py-2.5 rounded-full bg-[#104f37] hover:bg-[#0d3f2c] text-white text-xs font-bold shadow-md shadow-emerald-900/20 transition-all cursor-pointer"
+              >
+                Try It Free Now →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* INTERACTIVE DESKTOP APP WORKSPACE PREVIEW (Realistic Product UI) */}
+      {/* ========================================================================= */}
+      <section id="how-it-works" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-3xl mx-auto mb-10">
+          <h2 className="text-xs uppercase font-bold tracking-widest text-blue-600 dark:text-blue-400 mb-2">
+            How It Works
+          </h2>
+          <h3 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+            An intuitive workspace for your coursework
+          </h3>
         </div>
 
-        {/* Trust Mini Text */}
-        <div className="flex items-center justify-center gap-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
-          <span className="flex items-center gap-1.5">
-            <CheckCircle className="w-4 h-4 text-emerald-500" /> No credit card required
-          </span>
-          <span className="flex items-center gap-1.5">
-            <CheckCircle className="w-4 h-4 text-emerald-500" /> Instant JWT & Clerk SSO
-          </span>
-          <span className="flex items-center gap-1.5 hidden sm:flex">
-            <CheckCircle className="w-4 h-4 text-emerald-500" /> Mobile & Web Synced
-          </span>
-        </div>
-
-        {/* ========================================================================= */}
-        {/* INTERACTIVE DESKTOP APP WORKSPACE PREVIEW (Realistic Product UI) */}
-        {/* ========================================================================= */}
-        <div className="mt-14 max-w-6xl mx-auto rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl shadow-slate-900/10 dark:shadow-none overflow-hidden text-left">
+        <div className="max-w-6xl mx-auto rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl shadow-slate-900/10 dark:shadow-none overflow-hidden text-left">
           {/* Top Window Chrome Bar */}
           <div className="px-4 py-3 bg-slate-100/80 dark:bg-slate-950/80 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -590,9 +786,9 @@ const LandingPage = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 5. USER TESTIMONIALS & SOCIAL PROOF */}
+      {/* 5. USER TESTIMONIALS & ABOUT */}
       {/* ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <h2 className="text-xs uppercase font-bold tracking-widest text-indigo-600 dark:text-indigo-400 mb-2">
             Social Proof

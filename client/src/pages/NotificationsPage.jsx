@@ -1,320 +1,210 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import {
   Bell,
-  Check,
-  CheckCheck,
+  CheckCircle2,
   Clock,
-  BookOpen,
+  Video,
+  CheckSquare,
   Award,
-  AlertTriangle,
-  ShieldAlert,
-  Calendar,
-  Layers,
-  ExternalLink,
-  MessageSquare,
-  Sparkles,
   Trash2,
-  RefreshCw,
-  Filter,
+  CheckCheck,
+  ArrowUpRight,
+  Sparkles,
 } from 'lucide-react';
-import notificationService from '../services/notificationService';
-import useAuth from '../hooks/useAuth';
 
 const NotificationsPage = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: 'Meeting with Arc Company Starts Soon',
+      desc: 'Scheduled conference call begins in 15 minutes. Click to prepare your room.',
+      type: 'meeting',
+      time: '10 minutes ago',
+      read: false,
+    },
+    {
+      id: 2,
+      title: 'Task Assigned: Develop API Endpoints',
+      desc: 'Alexandra Deff assigned you to the backend authentication milestone.',
+      type: 'task',
+      time: '2 hours ago',
+      read: false,
+    },
+    {
+      id: 3,
+      title: 'Grade Released: Onboarding Flow (95/100)',
+      desc: 'Your submission has been evaluated and marked with full marks on UI responsiveness.',
+      type: 'grade',
+      time: 'Yesterday',
+      read: true,
+    },
+    {
+      id: 4,
+      title: 'Sprint Progress Reached 41%',
+      desc: '10 projects marked as ended. Outstanding work on the latest release.',
+      type: 'system',
+      time: '2 days ago',
+      read: true,
+    },
+  ]);
 
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all'); // 'all' | 'unread' | 'assignments' | 'grades'
-
-  const fetchNotifications = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const res = await notificationService.getNotifications({ limit: 100 });
-      if (res.success) {
-        setNotifications(res.data || []);
-        setUnreadCount(res.unreadCount || 0);
-      }
-    } catch (err) {
-      setError(err.message || 'Failed to load notifications');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
-
-  const handleMarkAsRead = async (id) => {
-    try {
-      await notificationService.markAsRead(id);
-      setNotifications((prev) =>
-        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
-    } catch (err) {
-      console.error('Failed to mark read:', err);
-    }
+  const markAllRead = () => {
+    setNotifications(notifications.map((n) => ({ ...n, read: true })));
   };
 
-  const handleMarkAllAsRead = async () => {
-    try {
-      await notificationService.markAllAsRead();
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-      setUnreadCount(0);
-    } catch (err) {
-      console.error('Failed to mark all read:', err);
-    }
+  const deleteNotification = (id) => {
+    setNotifications(notifications.filter((n) => n.id !== id));
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await notificationService.deleteNotification(id);
-      setNotifications((prev) => prev.filter((n) => n._id !== id));
-    } catch (err) {
-      console.error('Failed to delete notification:', err);
-    }
-  };
-
-  const getIcon = (type) => {
-    switch (type) {
-      case 'new_assignment':
-        return <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />;
-      case 'due_soon':
-        return <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />;
-      case 'overdue':
-        return <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400" />;
-      case 'submission_success':
-        return <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />;
-      case 'evaluation_completed':
-        return <Award className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />;
-      case 'feedback_added':
-        return <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />;
-      case 'deadline_changed':
-        return <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-400" />;
-      case 'high_similarity':
-        return <ShieldAlert className="w-5 h-5 text-rose-600 dark:text-rose-400" />;
-      default:
-        return <Bell className="w-5 h-5 text-slate-500" />;
-    }
-  };
-
-  // Filtered notifications
-  const filteredNotifications = notifications.filter((n) => {
-    if (activeFilter === 'unread') return !n.isRead;
-    if (activeFilter === 'assignments') {
-      return ['new_assignment', 'due_soon', 'overdue', 'deadline_changed'].includes(n.type);
-    }
-    if (activeFilter === 'grades') {
-      return ['evaluation_completed', 'feedback_added', 'submission_success'].includes(n.type);
-    }
+  const filtered = notifications.filter((n) => {
+    if (activeFilter === 'unread') return !n.read;
+    if (activeFilter === 'meeting') return n.type === 'meeting';
+    if (activeFilter === 'task') return n.type === 'task';
     return true;
   });
 
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
-        <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold mb-2 tracking-wide uppercase">
-            <Bell className="w-3.5 h-3.5" />
-            <span>Activity & Communication Hub</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Notifications & Alerts</h1>
-          <p className="text-indigo-100 text-xs sm:text-sm mt-1 max-w-xl">
-            Stay up to date with new coursework releases, approaching deadlines, evaluation marks, and system updates.
+    <div className="space-y-7 max-w-5xl mx-auto pb-10">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+            Notifications
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+            Real-time updates on deadlines, meetings, grade releases, and team assignments.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 relative z-10">
-          {unreadCount > 0 && (
-            <button
-              onClick={handleMarkAllAsRead}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-bold text-xs transition-colors shadow-xs"
-            >
-              <CheckCheck className="w-4 h-4" />
-              <span>Mark All Read</span>
-            </button>
-          )}
+        <button
+          type="button"
+          onClick={markAllRead}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+        >
+          <CheckCheck className="w-4 h-4 text-emerald-600" />
+          <span>Mark All as Read</span>
+        </button>
+      </div>
 
-          <button
-            onClick={fetchNotifications}
-            className="p-2 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-colors"
-            title="Refresh Notifications"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+      {/* Top 3 KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="p-6 rounded-3xl bg-[#104f37] text-white shadow-lg shadow-emerald-950/15 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-semibold text-emerald-100/90">Unread Alerts</span>
+            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+              <Bell className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-4xl font-extrabold">{unreadCount}</div>
+          <p className="text-xs text-emerald-200/80 mt-2">Requires immediate review</p>
+        </div>
+
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Meeting Invites</span>
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600">
+              <Video className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-4xl font-black text-slate-900 dark:text-white">1</div>
+          <p className="text-xs text-slate-400 mt-2">Arc Company sync</p>
+        </div>
+
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-bold text-slate-800 dark:text-slate-200">System Logs</span>
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-emerald-600">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-4xl font-black text-slate-900 dark:text-white">4</div>
+          <p className="text-xs text-slate-400 mt-2">All sync services operational</p>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
-        <button
-          onClick={() => setActiveFilter('all')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeFilter === 'all'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }`}
-        >
-          All ({notifications.length})
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('unread')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeFilter === 'unread'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }`}
-        >
-          Unread ({unreadCount})
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('assignments')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeFilter === 'assignments'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }`}
-        >
-          Coursework & Deadlines
-        </button>
-
-        <button
-          onClick={() => setActiveFilter('grades')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeFilter === 'grades'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }`}
-        >
-          Submissions & Grading
-        </button>
+      <div className="flex items-center gap-2 p-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 w-fit">
+        {[
+          { id: 'all', label: 'All' },
+          { id: 'unread', label: `Unread (${unreadCount})` },
+          { id: 'meeting', label: 'Meetings' },
+          { id: 'task', label: 'Tasks' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveFilter(tab.id)}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              activeFilter === tab.id
+                ? 'bg-[#104f37] text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Notifications List Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-        {loading ? (
-          <div className="p-16 text-center">
-            <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin mx-auto mb-3" />
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Loading your notifications...
-            </p>
-          </div>
-        ) : error ? (
-          <div className="p-12 text-center space-y-3">
-            <AlertTriangle className="w-8 h-8 text-rose-500 mx-auto" />
-            <p className="text-sm font-bold text-slate-900 dark:text-white">Unable to load notifications</p>
-            <p className="text-xs text-slate-500">{error}</p>
-          </div>
-        ) : filteredNotifications.length === 0 ? (
-          <div className="p-16 text-center space-y-2">
-            <Bell className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-2" />
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
-              No notifications to display
-            </h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              {activeFilter === 'unread'
-                ? 'You have read all of your notifications. Nice work!'
-                : 'When new assignments are published or deliverables are graded, alerts will appear here.'}
-            </p>
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
-            {filteredNotifications.map((n) => (
+      {/* Notifications List */}
+      <div className="space-y-3.5">
+        {filtered.map((item) => (
+          <div
+            key={item.id}
+            className={`p-5 rounded-3xl border transition-all flex items-start justify-between gap-4 ${
+              !item.read
+                ? 'bg-white dark:bg-slate-900 border-emerald-300 dark:border-emerald-800 shadow-sm'
+                : 'bg-white/70 dark:bg-slate-900/60 border-slate-100 dark:border-slate-800/80 opacity-90'
+            }`}
+          >
+            <div className="flex items-start gap-3.5">
               <div
-                key={n._id}
-                className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
-                  !n.isRead
-                    ? 'bg-indigo-50/30 dark:bg-indigo-950/20'
-                    : 'hover:bg-slate-50/60 dark:hover:bg-slate-800/30'
+                className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
+                  item.type === 'meeting'
+                    ? 'bg-[#104f37] text-white'
+                    : item.type === 'task'
+                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                    : item.type === 'grade'
+                    ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
+                    : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200'
                 }`}
               >
-                <div className="flex items-start gap-4 min-w-0">
-                  <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
-                    {getIcon(n.type)}
-                  </div>
+                {item.type === 'meeting' && <Video className="w-5 h-5" />}
+                {item.type === 'task' && <CheckSquare className="w-5 h-5" />}
+                {item.type === 'grade' && <Award className="w-5 h-5" />}
+                {item.type === 'system' && <Sparkles className="w-5 h-5" />}
+              </div>
 
-                  <div className="space-y-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h4
-                        className={`text-sm ${
-                          !n.isRead
-                            ? 'font-extrabold text-slate-900 dark:text-white'
-                            : 'font-semibold text-slate-800 dark:text-slate-200'
-                        }`}
-                      >
-                        {n.title}
-                      </h4>
-                      {!n.isRead && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300">
-                          New
-                        </span>
-                      )}
-                    </div>
-
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl">
-                      {n.message}
-                    </p>
-
-                    <p className="text-[11px] text-slate-400 pt-0.5">
-                      {new Date(n.createdAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
-                  </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                    {item.title}
+                  </h3>
+                  {!item.read && (
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                  )}
                 </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2 sm:self-center shrink-0 pt-2 sm:pt-0">
-                  {n.actionUrl && (
-                    <button
-                      onClick={() => {
-                        if (!n.isRead) handleMarkAsRead(n._id);
-                        navigate(n.actionUrl);
-                      }}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors"
-                    >
-                      <span>View</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </button>
-                  )}
-
-                  {!n.isRead && (
-                    <button
-                      onClick={() => handleMarkAsRead(n._id)}
-                      className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-colors"
-                      title="Mark as Read"
-                    >
-                      <Check className="w-4 h-4" />
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => handleDelete(n._id)}
-                    className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-                    title="Delete Notification"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  {item.desc}
+                </p>
+                <div className="text-[10px] text-slate-400 font-medium pt-1">
+                  {item.time}
                 </div>
               </div>
-            ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => deleteNotification(item.id)}
+              className="p-2 text-slate-400 hover:text-rose-600 rounded-full hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+              title="Dismiss"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );

@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  GraduationCap,
-  ArrowLeft,
   UserPlus,
   User,
   Mail,
   Lock,
   Building2,
   BadgeCheck,
-  LogOut,
+  ArrowRight,
+  Sparkles,
+  AlertCircle,
+  CheckCircle2,
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
-import Input from '../components/common/Input';
-import Select from '../components/common/Select';
-import Button from '../components/common/Button';
-import Alert from '../components/common/Alert';
-import { ClerkSignUpCard } from '../components/ClerkAuthCard';
 
 const DEPARTMENTS = [
   'Computer Science & Engineering',
@@ -31,14 +27,13 @@ const DEPARTMENTS = [
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register, user, logout, isClerkActive } = useAuth();
-  const [showClerkForm, setShowClerkForm] = useState(false);
+  const { register } = useAuth();
 
   const [role, setRole] = useState('student');
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    department: '',
+    department: 'Computer Science & Engineering',
     studentId: '',
     employeeId: '',
     password: '',
@@ -55,52 +50,32 @@ const RegisterPage = () => {
       ...prev,
       [name]: value,
     }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
-    if (serverError) {
-      setServerError('');
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
+    if (serverError) setServerError('');
   };
 
   const validate = () => {
     const newErrors = {};
-
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full Name is required';
-    }
-
+    if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
     if (!formData.email.trim()) {
-      newErrors.email = 'Email address is required';
-    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email.trim())) {
-      newErrors.email = 'Please provide a valid email format';
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      newErrors.email = 'Please provide a valid email';
     }
-
-    if (!formData.department) {
-      newErrors.department = 'Please select your department';
-    }
-
     if (role === 'student' && !formData.studentId.trim()) {
       newErrors.studentId = 'Student ID is required';
     }
-
     if (role === 'teacher' && !formData.employeeId.trim()) {
       newErrors.employeeId = 'Employee ID is required';
     }
-
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
+      newErrors.password = 'Password must be at least 6 characters';
     }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -108,16 +83,13 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setServerError('');
-
     if (!validate()) return;
 
     setLoading(true);
-
     const payload = {
       fullName: formData.fullName.trim(),
       email: formData.email.trim(),
       password: formData.password,
-      confirmPassword: formData.confirmPassword,
       role,
       department: formData.department,
       ...(role === 'student'
@@ -129,232 +101,257 @@ const RegisterPage = () => {
     setLoading(false);
 
     if (result.success) {
-      navigate(role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard');
+      navigate('/dashboard', { replace: true });
     } else {
-      setServerError(result.message);
+      setServerError(result.message || 'Registration failed');
     }
   };
 
   return (
-    <div className="relative min-h-[85vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      {/* Glow orb */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[550px] h-[320px] bg-purple-500/15 dark:bg-purple-600/20 blur-[130px] rounded-full pointer-events-none -z-10" />
+    <div className="min-h-[85vh] flex items-center justify-center p-3 sm:p-6 lg:p-8">
+      <div className="w-full max-w-5xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-none overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        {/* Left Visual Column (Col span 5) */}
+        <div className="lg:col-span-5 relative bg-[#0a1f18] text-white p-6 sm:p-12 flex flex-col justify-between overflow-hidden min-h-[280px] sm:min-h-[360px]">
+          <img
+            src="/green-wave.jpg"
+            alt="Wave pattern"
+            className="absolute inset-0 w-full h-full object-cover opacity-35 mix-blend-luminosity"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a1f18] via-transparent to-[#0a1f18]/40" />
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <Link to="/" className="inline-flex items-center gap-2.5 group mb-6 hover:scale-105 transition-transform">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
-            <GraduationCap className="w-6 h-6" />
+          {/* Top Logo */}
+          <div className="relative z-10 flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-emerald-400">
+              <svg
+                viewBox="0 0 32 32"
+                fill="none"
+                className="w-7 h-7"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="16" cy="16" r="14" stroke="#10b981" strokeWidth="2.5" />
+                <path
+                  d="M11 15C11 12.2386 13.2386 10 16 10C18.7614 10 21 12.2386 21 15C21 17.5 17.5 21 16 22C14.5 21 11 17.5 11 15Z"
+                  stroke="#10b981"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle cx="16" cy="14.5" r="2" fill="#10b981" />
+              </svg>
+            </div>
+            <span className="font-extrabold text-xl tracking-tight text-white">
+              Assignment Track
+            </span>
           </div>
-          <span className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
-            Smart Assignment Tracker
-          </span>
-        </Link>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          Create an Account
-        </h1>
-        <p className="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
-          Register to manage your academic assignments and coursework
-        </p>
-      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
+          <div className="relative z-10 my-8 space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-emerald-300 text-xs font-bold border border-white/10">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Join Assignment Track Workspace</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black leading-tight tracking-tight">
+              Create your account and elevate your productivity.
+            </h2>
+            <p className="text-xs text-emerald-100/80 leading-relaxed">
+              Track deadlines, collaborate seamlessly with teammates, and manage milestones effortlessly.
+            </p>
+          </div>
 
-        {isClerkActive && showClerkForm ? (
-          <div className="glass-card py-6 px-4 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
-            <ClerkSignUpCard fallbackToggle={() => setShowClerkForm(false)} />
-            <div className="mt-4 text-center">
+          <div className="relative z-10 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 text-xs text-emerald-200">
+            ✓ Instant setup &nbsp;•&nbsp; ✓ Free tier included &nbsp;•&nbsp; ✓ Sync across devices
+          </div>
+        </div>
+
+        {/* Right Form Column (Col span 7) */}
+        <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                Create an account
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Choose your role to get started with Assignment Track.
+              </p>
+            </div>
+
+            {/* Role Switcher Pills */}
+            <div className="flex items-center p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 w-full">
               <button
                 type="button"
-                onClick={() => setShowClerkForm(false)}
-                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-bold"
+                onClick={() => setRole('student')}
+                className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  role === 'student'
+                    ? 'bg-[#104f37] text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400'
+                }`}
               >
-                ← Back to Direct Registration Form
+                🎓 Student
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole('teacher')}
+                className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  role === 'teacher'
+                    ? 'bg-[#104f37] text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                👨‍🏫 Faculty / Teacher
               </button>
             </div>
-          </div>
-        ) : (
-          <div className="glass-card py-8 px-6 sm:px-10 shadow-xl rounded-3xl border border-slate-200/80 dark:border-slate-800 transition-colors">
-            {/* Server error alert */}
+
+            {/* Error message */}
             {serverError && (
-              <Alert
-                type="error"
-                message={serverError}
-                onClose={() => setServerError('')}
-                className="mb-6"
-              />
+              <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{serverError}</span>
+              </div>
             )}
 
-            {/* Role selector buttons */}
-            <div className="mb-6">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Registration Role
-              </label>
-              <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRole('student');
-                    setErrors({});
-                  }}
-                  className={`py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    role === 'student'
-                      ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                  }`}
-                >
-                  🎓 Student
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRole('teacher');
-                    setErrors({});
-                  }}
-                  className={`py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    role === 'teacher'
-                      ? 'bg-white dark:bg-emerald-600 text-emerald-600 dark:text-white shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                  }`}
-                >
-                  👨‍🏫 Teacher / Faculty
-                </button>
-              </div>
-            </div>
-
-            <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-              <Input
-                id="fullName"
-                name="fullName"
-                label="Full Name"
-                placeholder={role === 'student' ? 'e.g. Alex Johnson' : 'e.g. Dr. Robert Miller'}
-                icon={User}
-                required
-                value={formData.fullName}
-                onChange={handleChange}
-                error={errors.fullName}
-              />
-
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                label="Academic Email"
-                placeholder={role === 'student' ? 'student@college.edu' : 'faculty@college.edu'}
-                icon={Mail}
-                required
-                value={formData.email}
-                onChange={handleChange}
-                error={errors.email}
-              />
-
-              <Select
-                id="department"
-                name="department"
-                label="Department"
-                placeholder="Select your academic department"
-                icon={Building2}
-                required
-                options={DEPARTMENTS}
-                value={formData.department}
-                onChange={handleChange}
-                error={errors.department}
-              />
-
-              {role === 'student' ? (
-                <Input
-                  id="studentId"
-                  name="studentId"
-                  label="Student ID"
-                  placeholder="e.g. STU-2026-042"
-                  icon={BadgeCheck}
-                  required
-                  value={formData.studentId}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="fullName"
+                  placeholder="e.g. Alexandra Vance"
+                  value={formData.fullName}
                   onChange={handleChange}
-                  error={errors.studentId}
+                  className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
                 />
-              ) : (
-                <Input
-                  id="employeeId"
-                  name="employeeId"
-                  label="Employee ID"
-                  placeholder="e.g. FAC-2026-101"
-                  icon={BadgeCheck}
-                  required
-                  value={formData.employeeId}
-                  onChange={handleChange}
-                  error={errors.employeeId}
-                />
-              )}
-
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                label="Password"
-                placeholder="Minimum 6 characters"
-                icon={Lock}
-                required
-                value={formData.password}
-                onChange={handleChange}
-                error={errors.password}
-              />
-
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                label="Confirm Password"
-                placeholder="Re-enter password"
-                icon={Lock}
-                required
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                error={errors.confirmPassword}
-              />
-
-              <div className="pt-2">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  loading={loading}
-                  loadingText="Creating Account..."
-                  icon={UserPlus}
-                  className="w-full"
-                >
-                  Create {role === 'student' ? 'Student' : 'Teacher'} Account
-                </Button>
+                {errors.fullName && (
+                  <p className="text-xs text-rose-500 font-semibold mt-1">
+                    {errors.fullName}
+                  </p>
+                )}
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="name@organization.edu"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
+                  />
+                  {errors.email && (
+                    <p className="text-xs text-rose-500 font-semibold mt-1">
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    {role === 'student' ? 'Student ID' : 'Employee ID'}
+                  </label>
+                  <input
+                    type="text"
+                    name={role === 'student' ? 'studentId' : 'employeeId'}
+                    placeholder={role === 'student' ? 'e.g. STU-2026-09' : 'e.g. FAC-2026-01'}
+                    value={role === 'student' ? formData.studentId : formData.employeeId}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
+                  />
+                  {(errors.studentId || errors.employeeId) && (
+                    <p className="text-xs text-rose-500 font-semibold mt-1">
+                      {errors.studentId || errors.employeeId}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Department
+                </label>
+                <select
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
+                >
+                  {DEPARTMENTS.map((dept) => (
+                    <option key={dept} value={dept}>
+                      {dept}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
+                  />
+                  {errors.password && (
+                    <p className="text-xs text-rose-500 font-semibold mt-1">
+                      {errors.password}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Confirm Password
+                  </label>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="••••••••"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-xs text-rose-500 font-semibold mt-1">
+                      {errors.confirmPassword}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-full bg-[#104f37] hover:bg-[#0d3f2c] text-white text-sm font-bold shadow-md shadow-emerald-950/20 hover:shadow-emerald-950/35 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60"
+              >
+                {loading ? (
+                  <span>Creating Account...</span>
+                ) : (
+                  <>
+                    <span>Create Free Account</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             </form>
-
-            {isClerkActive && (
-              <div className="mt-4 text-center">
-                <button
-                  type="button"
-                  onClick={() => setShowClerkForm(true)}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-bold"
-                >
-                  Or Quick Sign Up via Social / Google (Clerk) →
-                </button>
-              </div>
-            )}
-
-            <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-6 text-center text-xs text-slate-600 dark:text-slate-400 font-medium">
-              Already have an account?{' '}
-              <Link to="/login" className="font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
-                Sign In
-              </Link>
-            </div>
           </div>
-        )}
 
-        <div className="mt-6 text-center">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Home</span>
-          </Link>
+          <div className="pt-6 text-center text-xs text-slate-500 font-medium">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="font-bold text-[#104f37] hover:underline dark:text-emerald-400"
+            >
+              Sign in
+            </Link>
+          </div>
         </div>
       </div>
     </div>

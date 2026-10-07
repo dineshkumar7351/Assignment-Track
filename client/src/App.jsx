@@ -50,6 +50,9 @@ import AdminAssignmentsPage from './pages/admin/AdminAssignmentsPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
 import ClerkProviderWrapper from './context/ClerkProviderWrapper';
 
+import TeamPage from './pages/TeamPage';
+import HelpPage from './pages/HelpPage';
+
 function App() {
   return (
     <ErrorBoundary>
@@ -90,7 +93,7 @@ function App() {
                 <Route path=":id/submit" element={<StudentSubmitPage />} />
               </Route>
 
-              {/* Direct Calendar & Notification & Analytics Routes */}
+              {/* Direct Calendar & Notification & Analytics & Team & Help Routes */}
               <Route
                 path="/calendar"
                 element={
@@ -125,6 +128,17 @@ function App() {
               </Route>
 
               <Route
+                path="/team"
+                element={
+                  <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+                    <DashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<TeamPage />} />
+              </Route>
+
+              <Route
                 path="/ai-assistant"
                 element={
                   <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
@@ -144,6 +158,28 @@ function App() {
                 }
               >
                 <Route index element={<ProfilePage />} />
+              </Route>
+
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+                    <DashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<ProfilePage />} />
+              </Route>
+
+              <Route
+                path="/help"
+                element={
+                  <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+                    <DashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<HelpPage />} />
               </Route>
 
               {/* Student Role Application Section */}
