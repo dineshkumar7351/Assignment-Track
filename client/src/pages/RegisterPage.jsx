@@ -90,6 +90,7 @@ const RegisterPage = () => {
       fullName: formData.fullName.trim(),
       email: formData.email.trim(),
       password: formData.password,
+      confirmPassword: formData.confirmPassword,
       role,
       department: formData.department,
       ...(role === 'student'

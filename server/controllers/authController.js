@@ -65,12 +65,7 @@ const register = async (req, res, next) => {
       throw new Error('Password must be at least 6 characters long');
     }
 
-    if (!confirmPassword) {
-      res.status(400);
-      throw new Error('Please confirm your password');
-    }
-
-    if (password !== confirmPassword) {
+    if (confirmPassword && password !== confirmPassword) {
       res.status(400);
       throw new Error('Passwords do not match');
     }
