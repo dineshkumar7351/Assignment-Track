@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Mail,
@@ -8,13 +8,30 @@ import {
   UserCheck,
   CheckCircle2,
   AlertCircle,
+  ShieldCheck,
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
+import { ClerkSignInCard } from '../components/ClerkAuthCard';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, user, isClerkActive } = useAuth();
+
+  const [authMode, setAuthMode] = useState(isClerkActive ? 'clerk' : 'institutional');
+
+  useEffect(() => {
+    if (user) {
+      const userRole = user?.role;
+      const targetPath =
+        userRole === 'admin'
+          ? '/admin/dashboard'
+          : userRole === 'teacher'
+          ? '/teacher/dashboard'
+          : '/dashboard';
+      navigate(location.state?.from?.pathname || targetPath, { replace: true });
+    }
+  }, [user, navigate, location]);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -164,114 +181,150 @@ const LoginPage = () => {
                 Welcome back
               </h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                Enter your credentials to access your Assignment Track workspace.
+                Access your Assignment Track workspace using Clerk SSO or Campus ID.
               </p>
             </div>
 
-            {/* Error Message */}
-            {serverError && (
-              <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{serverError}</span>
+            {/* Auth Mode Switcher if Clerk is configured */}
+            {isClerkActive && (
+              <div className="flex items-center p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 w-full">
+                <button
+                  type="button"
+                  onClick={() => setAuthMode('clerk')}
+                  className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    authMode === 'clerk'
+                      ? 'bg-[#104f37] text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  ⚡ Clerk SSO / Google
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAuthMode('institutional')}
+                  className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    authMode === 'institutional'
+                      ? 'bg-[#104f37] text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  🔑 Campus Email & Pass
+                </button>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="name@organization.edu"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
-                  />
+            {isClerkActive && authMode === 'clerk' ? (
+              <div className="pt-2">
+                <ClerkSignInCard fallbackToggle={() => setAuthMode('institutional')} />
+              </div>
+            ) : (
+              <>
+                {/* Error Message */}
+                {serverError && (
+                  <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{serverError}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="name@organization.edu"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
+                      />
+                    </div>
+                    {errors.email && (
+                      <p className="text-xs text-rose-500 font-semibold mt-1">
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
+                      <input
+                        type="password"
+                        name="password"
+                        placeholder="••••••••"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
+                      />
+                    </div>
+                    {errors.password && (
+                      <p className="text-xs text-rose-500 font-semibold mt-1">
+                        {errors.password}
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3.5 rounded-full bg-[#104f37] hover:bg-[#0d3f2c] text-white text-sm font-bold shadow-md shadow-emerald-950/20 hover:shadow-emerald-950/35 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60"
+                  >
+                    {loading ? (
+                      <span>Signing In...</span>
+                    ) : (
+                      <>
+                        <span>Sign In</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                {/* Quick 1-Click Demo Logins */}
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                    ⚡ Quick Demo Accounts
+                  </span>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleQuickDemoLogin('student@smarttracker.edu', 'StudentPass123!')
+                      }
+                      className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                    >
+                      🎓 Student
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleQuickDemoLogin('teacher@smarttracker.edu', 'TeacherPass123!')
+                      }
+                      className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                    >
+                      👨‍🏫 Faculty
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleQuickDemoLogin('admin@smarttracker.edu', 'AdminPass123!')
+                      }
+                      className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                    >
+                      🛡️ Admin
+                    </button>
+                  </div>
                 </div>
-                {errors.email && (
-                  <p className="text-xs text-rose-500 font-semibold mt-1">
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-emerald-600/30 focus:outline-none"
-                  />
-                </div>
-                {errors.password && (
-                  <p className="text-xs text-rose-500 font-semibold mt-1">
-                    {errors.password}
-                  </p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 rounded-full bg-[#104f37] hover:bg-[#0d3f2c] text-white text-sm font-bold shadow-md shadow-emerald-950/20 hover:shadow-emerald-950/35 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60"
-              >
-                {loading ? (
-                  <span>Signing In...</span>
-                ) : (
-                  <>
-                    <span>Sign In</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            {/* Quick 1-Click Demo Logins */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                ⚡ Quick Demo Accounts
-              </span>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleQuickDemoLogin('student@smarttracker.edu', 'StudentPass123!')
-                  }
-                  className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
-                >
-                  🎓 Student
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleQuickDemoLogin('teacher@smarttracker.edu', 'TeacherPass123!')
-                  }
-                  className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
-                >
-                  👨‍🏫 Faculty
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleQuickDemoLogin('admin@smarttracker.edu', 'AdminPass123!')
-                  }
-                  className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
-                >
-                  🛡️ Admin
-                </button>
-              </div>
-            </div>
+              </>
+            )}
           </div>
 
           {/* Footer Link */}

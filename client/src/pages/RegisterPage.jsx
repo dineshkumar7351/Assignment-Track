@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   UserPlus,
@@ -13,6 +13,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
+import { ClerkSignUpCard } from '../components/ClerkAuthCard';
 
 const DEPARTMENTS = [
   'Computer Science & Engineering',
@@ -27,9 +28,23 @@ const DEPARTMENTS = [
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, user, isClerkActive } = useAuth();
 
+  const [authMode, setAuthMode] = useState(isClerkActive ? 'clerk' : 'institutional');
   const [role, setRole] = useState('student');
+
+  useEffect(() => {
+    if (user) {
+      const userRole = user?.role;
+      const targetPath =
+        userRole === 'admin'
+          ? '/admin/dashboard'
+          : userRole === 'teacher'
+          ? '/teacher/dashboard'
+          : '/dashboard';
+      navigate(targetPath, { replace: true });
+    }
+  }, [user, navigate]);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -171,43 +186,77 @@ const RegisterPage = () => {
                 Create an account
               </h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                Choose your role to get started with Assignment Track.
+                Join Assignment Track using Clerk SSO or register your academic profile.
               </p>
             </div>
 
-            {/* Role Switcher Pills */}
-            <div className="flex items-center p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 w-full">
-              <button
-                type="button"
-                onClick={() => setRole('student')}
-                className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  role === 'student'
-                    ? 'bg-[#104f37] text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400'
-                }`}
-              >
-                🎓 Student
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole('teacher')}
-                className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  role === 'teacher'
-                    ? 'bg-[#104f37] text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400'
-                }`}
-              >
-                👨‍🏫 Faculty / Teacher
-              </button>
-            </div>
-
-            {/* Error message */}
-            {serverError && (
-              <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{serverError}</span>
+            {/* Auth Mode Switcher if Clerk is configured */}
+            {isClerkActive && (
+              <div className="flex items-center p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 w-full">
+                <button
+                  type="button"
+                  onClick={() => setAuthMode('clerk')}
+                  className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    authMode === 'clerk'
+                      ? 'bg-[#104f37] text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:white'
+                  }`}
+                >
+                  ⚡ Clerk SSO / Google
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAuthMode('institutional')}
+                  className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    authMode === 'institutional'
+                      ? 'bg-[#104f37] text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:white'
+                  }`}
+                >
+                  📝 Student / Faculty Form
+                </button>
               </div>
             )}
+
+            {isClerkActive && authMode === 'clerk' ? (
+              <div className="pt-2">
+                <ClerkSignUpCard fallbackToggle={() => setAuthMode('institutional')} />
+              </div>
+            ) : (
+              <>
+                {/* Role Switcher Pills */}
+                <div className="flex items-center p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 w-full">
+                  <button
+                    type="button"
+                    onClick={() => setRole('student')}
+                    className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      role === 'student'
+                        ? 'bg-[#104f37] text-white shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    🎓 Student
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRole('teacher')}
+                    className={`flex-1 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      role === 'teacher'
+                        ? 'bg-[#104f37] text-white shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    👨‍🏫 Faculty / Teacher
+                  </button>
+                </div>
+
+                {/* Error message */}
+                {serverError && (
+                  <div className="p-4 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{serverError}</span>
+                  </div>
+                )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -342,7 +391,9 @@ const RegisterPage = () => {
                 )}
               </button>
             </form>
-          </div>
+          </>
+        )}
+      </div>
 
           <div className="pt-6 text-center text-xs text-slate-500 font-medium">
             Already have an account?{' '}
